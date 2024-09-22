@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    width: 100%;
+    align-items: center;
+    background-color: var(--tg-theme-secondary-bg-color);
+    color: var(--tg-theme-text-color);
+    gap: 10px;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+a {
+    color: var(--tg-theme-link-color);
+}
+main {
+    width: 100%;
+    height: auto;
+    padding-bottom: 70px;
+}
+.start-page {
+    padding-bottom: 0;
+}
+.grid path.recharts-cartesian-grid-horizontal {
+    stroke-dasharray: none;
+}
+::-webkit-scrollbar {
+    display: none;
+}
+
+/* Скрыть полосу прокрутки */
+::-webkit-scrollbar-track {
+    display: none;
+}
+
+/* Скрыть полосу прокрутки */
+::-webkit-scrollbar-thumb {
+    display: none;
+}
+.css-dl7nww-MuiPaper-root-MuiDrawer-paper {
+    background: none !important;
+}
+.newClass {
+    color: #7addea;
+}
+
+
+.nameCompany {
+    background: linear-gradient(to right, var(--tg-theme-subtitle-text-color) 20%, var(--tg-theme-accent-text-color) 40%, var(--tg-theme-accent-text-color) 60%, var(--tg-theme-subtitle-text-color) 80%);
+    background-size: 200% auto;
+    color: #000;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 2s linear infinite;
+}
+@keyframes shine {
+    to {
+        background-position: 200% center;
+    }
+}
+
+.glareRound {
+    position: absolute;
+    transform: translateX(50%) translateY(50px);
+    z-index: 0;
+    opacity: 0.5;
+    border-radius: 50%;
+    filter: blur(100px);
+    width: 50%;
+    height: 200px;
+}
+.glareGreen {
+    position: absolute;
+    transform: translateX(50%) translateY(50px);
+    z-index: 0;
+    opacity: 0.5;
+    border-radius: 50%;
+    filter: blur(100px);
+    width: 50%;
+    height: 200px;
+    background-color: green;
+}
+.glareYellow {
+    position: absolute;
+    transform: translateX(50%) translateY(50px);
+    z-index: 0;
+    opacity: 0.5;
+    border-radius: 50%;
+    filter: blur(100px);
+    width: 50%;
+    height: 200px;
+    background-color: yellow;
+}
+.glareBlue {
+    position: absolute;
+    transform: translateX(50%) translateY(50px);
+    z-index: 0;
+    opacity: 0.5;
+    border-radius: 50%;
+    filter: blur(100px);
+    width: 50%;
+    height: 200px;
+    backdrop-filter: blur(100px);
+    -webkit-backdrop-filter: blur(100px);
+    background-color: blue;
+}
+.glarePurple {
+    position: absolute;
+    transform: translateX(50%) translateY(50px);
+    z-index: 0;
+    opacity: 0.5;
+    border-radius: 50%;
+    filter: blur(100px);
+    width: 50%;
+    height: 200px;
+    backdrop-filter: blur(100px);
+    -webkit-backdrop-filter: blur(100px);
+    background-color: purple;
+}
