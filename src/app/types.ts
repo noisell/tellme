@@ -1,3 +1,5 @@
+import {Languages} from "next/dist/lib/metadata/types/alternative-urls-types";
+
 export type Level = {
     id: number,
     name: string,
@@ -56,3 +58,25 @@ export type Top = {
     count: number,
     rate: number
 }
+
+export type Price = {
+    price_one: number,
+    price_two: number,
+    price_three: number,
+    price_four: number,
+}
+
+export type Categories = {
+    id: number,
+    name: string,
+    parent_id: number | null,
+    active: boolean,
+    price: Price,
+    children: Categories[] | [],
+}
+
+export type TreeCategories = {
+  value: number;
+  title: string;
+  children: TreeCategories[] | [];
+};

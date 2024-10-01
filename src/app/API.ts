@@ -1,6 +1,15 @@
 import axios from "axios";
 import {ITelegramUser, IWebApp} from "@/context/types";
-import {ExecuterData, ExecutorSchedule, Level, PageState, Top, UserData, UserTasksCompleted} from "@/app/types";
+import {
+    Categories,
+    ExecuterData,
+    ExecutorSchedule,
+    Level,
+    PageState,
+    Top,
+    UserData,
+    UserTasksCompleted
+} from "@/app/types";
 import {OrdersAcceptSection} from "@/app/components/ordersAcceptSection";
 import internal from "node:stream";
 
@@ -348,6 +357,17 @@ export async function getLevels (): Promise<Level[] | false> {
 export async function getTop100 (): Promise<Top[] | false> {
     try {
         const result = await axios.get(`${baseURL}/executor/top/100`)
+        return result.data
+    }
+    catch (error: any) {
+        console.error(error.message);
+        return false;
+    }
+}
+
+export async function getCategories(): Promise<Categories[] | false> {
+    try {
+        const result = await axios.get(`${baseURL}/category/get/all`)
         return result.data
     }
     catch (error: any) {

@@ -17,7 +17,7 @@ export function Nav() {
     }
     if (!showNavigation) return null;
     return (
-        <nav className={"flex w-full items-center justify-around fixed bottom-0 py-3 px-7 z-50 bg-tg-section-separator-color text-2xl text-tg-subtitle-color"}>
+        <nav className={"flex w-full items-center justify-around fixed bottom-0 py-3 px-7 z-50 bg-tg-bottom_background-color text-2xl text-tg-subtitle-color"}>
             <ConfigProvider theme={{
                 components: {
                     Badge: {

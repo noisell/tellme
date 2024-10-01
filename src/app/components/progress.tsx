@@ -10,7 +10,7 @@ import {Drawer} from "@/app/components/drawer";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ReplyIcon from '@mui/icons-material/Reply';
 
-interface Props {user_id: number}
+interface Props {user_id: number, isClient?: boolean}
 
 export function TasksProgress(props: Props) {
     const [tasks, setTasks] = useState<UserTasksCompleted | null>(null)
@@ -171,7 +171,7 @@ export function TasksProgress(props: Props) {
     }
     return (tasks ?
             <div
-                className="flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium ">
+                className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium ${window.Telegram.WebApp.colorScheme === 'light' && 'shadow-md shadow-gray-400'}`}>
                 <div className="flex w-full items-center justify-between px-2">
                     <div className="flex w-full items-center gap-2">
                         <OrderedListOutlined/>
@@ -182,8 +182,9 @@ export function TasksProgress(props: Props) {
                         onClick={() => setModalOpen(true)}
                     />
                 </div>
-                <p className="mr-auto px-2 text-xs text-tg-subtitle-color mt-2">Выполните 3 простых задания для
-                    того, чтобы начать принимать заказы!</p>
+                <p className="mr-auto px-2 text-xs text-tg-subtitle-color mt-2">
+                    {props.isClient ? "Выполните 3 простых задания и сможете создать один заказ полностью бесплатно" : "Выполните 3 простых задания для того, чтобы начать принимать заказы!"}
+                </p>
                 <div className="flex w-full items-center justify-between mt-3 overflow-auto gap-2">
                 <ConfigProvider theme={{
                         components: {
