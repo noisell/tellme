@@ -224,6 +224,7 @@ export default function Home() {
           }
           incomeToday={executor.amount}
         />
+        <Link href={'/call/32'}>Звонок</Link>
         {activeOrder && (
           <>
             <div className='flex flex-col w-full h-auto items-center'>
@@ -352,7 +353,7 @@ export default function Home() {
         />
         <Link
           href={'/history-executor'}
-          className='flex w-full h-auto items-center justify-between bg-tg-section-color rounded-3xl mt-3 py-4 px-6 font-medium '>
+          className='flex w-full h-auto items-center text-tg-text-color justify-between bg-tg-section-color rounded-3xl mt-3 py-4 px-6 font-medium'>
           <div className='flex w-full items-center gap-2'>
             <SolutionOutlined />
             <span>История заказов</span>

@@ -61,7 +61,7 @@ export const HistoryItem = ({
   ;``
 
   return (
-    <div className='cursor-pointer flex flex-col w-full h-auto items-center bg-tg-section-color p-4 border-b border-b-tg-section-separator-color'>
+    <div className='cursor-pointer flex flex-col w-full h-auto items-center bg-tg-section-color p-4 border-b-[0.5px] border-b-tg-section-separator-color'>
       <ConfigProvider
         theme={{
           components: {
@@ -78,7 +78,7 @@ export const HistoryItem = ({
           onClick={() => setOpen(!open)}
           className='flex items-center w-full rounded-xl'>
           <div
-            className='flex text-2xl rounded-xl p-2 flex-shrink-0 min-w-[110px]'
+            className='flex text-2xl rounded-xl p-2 flex-shrink-0 min-w-[100px]'
             style={{ color: `${color}` }}>
             {price} ₽
           </div>
@@ -92,11 +92,11 @@ export const HistoryItem = ({
           </div>
         </div>
         <div className='text-[20px]'>
-          <div className='text-red-500'>
-            {status === 'closed' && <CloseCircleOutlined />}
-          </div>
           <div className='text-green-500'>
-            {status === 'canceled' && <CheckCircleOutlined />}
+            {status === 'closed' && <CheckCircleOutlined />}
+          </div>
+          <div className='text-red-500'>
+            {status === 'canceled' && <CloseCircleOutlined />}
           </div>
           <div className='text-orange-500'>
             {status === 'dispute' && <ExclamationCircleOutlined />}

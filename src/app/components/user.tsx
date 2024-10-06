@@ -360,7 +360,7 @@ export default function User() {
 
     createProject(data).then(r => {
       fetchProject()
-      success('Заявка создана!')
+      success('Заказ успешно создан!')
     })
   }
 
@@ -822,7 +822,9 @@ export default function User() {
             window.Telegram.WebApp.colorScheme === 'light' &&
             'shadow-md shadow-gray-400'
           }`}>
-          <Link href={'/history'} className='flex w-full items-center gap-2'>
+          <Link
+            href={'/history'}
+            className='flex w-full items-center gap-2 text-tg-text-color'>
             <SolutionOutlined />
             <span>История заказов</span>
           </Link>
