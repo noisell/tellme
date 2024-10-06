@@ -2,126 +2,207 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Text Colors */
+  --tg-theme-section-header-text-color: #ffffff; /* tg-header-color */
+  --tg-theme-subtitle-text-color: #808080; /* tg-subtitle-color */
+  --tg-theme-accent-text-color: #6ab1f1; /* tg-accent-color */
+  --tg-theme-text-color: #ffffff; /* tg-text-color */
+  --tg-theme-button-text-color: #ffffff; /* tg-button-text-color */
+  --tg-theme-hint-color: #616161; /* tg-hint-color */
+  --tg-theme-destructive-text-color: #ff0c0c; /* tg-destructive-text-color */
+
+  /* Background Colors */
+  --tg-theme-section-bg-color: #181818; /* tg-section-color */
+  --tg-theme-bg-color: #000000; /* tg-background-color */
+  --tg-theme-header-bg-color: #000000; /* tg-header-background-color */
+  --tg-theme-secondary-bg-color: #000000; /* tg-secondary-background-color */
+  --tg-theme-bottom-bar-bg-color: #000000; /* tg-bottom_background-color */
+
+  /* Other */
+  --tg-theme-button-color: #5288c1; /* tg-button-color */
+  --tg-theme-section-separator-color: #222222; /* tg-section-second-color */
+}
+
+button,
+a {
+  cursor: pointer;
+}
+
 body {
-    display: flex;
-    flex-direction: column;
-    max-width: 500px;
-    width: 100%;
-    align-items: center;
-    background-color: var(--tg-theme-secondary-bg-color);
-    color: var(--tg-theme-text-color);
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  width: 100%;
+  align-items: center;
+  background-color: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-text-color);
+  gap: 10px;
 }
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 a {
-    color: var(--tg-theme-link-color);
+  color: var(--tg-theme-link-color);
 }
 main {
-    width: 100%;
-    height: auto;
-    padding-bottom: 70px;
+  width: 100%;
+  height: auto;
+  padding-bottom: 70px;
 }
 .start-page {
-    padding-bottom: 0;
+  padding-bottom: 0;
 }
 .grid path.recharts-cartesian-grid-horizontal {
-    stroke-dasharray: none;
+  stroke-dasharray: none;
 }
 ::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 /* Скрыть полосу прокрутки */
 ::-webkit-scrollbar-track {
-    display: none;
+  display: none;
 }
 
 /* Скрыть полосу прокрутки */
 ::-webkit-scrollbar-thumb {
-    display: none;
+  display: none;
 }
 .css-dl7nww-MuiPaper-root-MuiDrawer-paper {
-    background: none !important;
+  background: none !important;
 }
 .newClass {
-    color: #7addea;
+  color: #7addea;
 }
-
 
 .nameCompany {
-    background: linear-gradient(to right, var(--tg-theme-subtitle-text-color) 20%, var(--tg-theme-accent-text-color) 40%, var(--tg-theme-accent-text-color) 60%, var(--tg-theme-subtitle-text-color) 80%);
-    background-size: 200% auto;
-    color: #000;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shine 2s linear infinite;
+  background: linear-gradient(
+    to right,
+    var(--tg-theme-subtitle-text-color) 20%,
+    var(--tg-theme-accent-text-color) 40%,
+    var(--tg-theme-accent-text-color) 60%,
+    var(--tg-theme-subtitle-text-color) 80%
+  );
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 2s linear infinite;
 }
 @keyframes shine {
-    to {
-        background-position: 200% center;
-    }
+  to {
+    background-position: 200% center;
+  }
 }
 
 .glareRound {
-    position: absolute;
-    transform: translateX(50%) translateY(50px);
-    z-index: 0;
-    opacity: 0.5;
-    border-radius: 50%;
-    filter: blur(100px);
-    width: 50%;
-    height: 200px;
+  position: absolute;
+  transform: translateX(50%) translateY(50px);
+  z-index: 0;
+  opacity: 0.5;
+  border-radius: 50%;
+  filter: blur(100px);
+  width: 50%;
+  height: 200px;
 }
 .glareGreen {
-    position: absolute;
-    transform: translateX(50%) translateY(50px);
-    z-index: 0;
-    opacity: 0.5;
-    border-radius: 50%;
-    filter: blur(100px);
-    width: 50%;
-    height: 200px;
-    background-color: green;
+  position: absolute;
+  transform: translateX(50%) translateY(50px);
+  z-index: 0;
+  opacity: 0.5;
+  border-radius: 50%;
+  filter: blur(100px);
+  width: 50%;
+  height: 200px;
+  background-color: green;
 }
 .glareYellow {
-    position: absolute;
-    transform: translateX(50%) translateY(50px);
-    z-index: 0;
-    opacity: 0.5;
-    border-radius: 50%;
-    filter: blur(100px);
-    width: 50%;
-    height: 200px;
-    background-color: yellow;
+  position: absolute;
+  transform: translateX(50%) translateY(50px);
+  z-index: 0;
+  opacity: 0.5;
+  border-radius: 50%;
+  filter: blur(100px);
+  width: 50%;
+  height: 200px;
+  background-color: yellow;
 }
 .glareBlue {
-    position: absolute;
-    transform: translateX(50%) translateY(50px);
-    z-index: 0;
-    opacity: 0.5;
-    border-radius: 50%;
-    filter: blur(100px);
-    width: 50%;
-    height: 200px;
-    backdrop-filter: blur(100px);
-    -webkit-backdrop-filter: blur(100px);
-    background-color: blue;
+  position: absolute;
+  transform: translateX(50%) translateY(50px);
+  z-index: 0;
+  opacity: 0.5;
+  border-radius: 50%;
+  filter: blur(100px);
+  width: 50%;
+  height: 200px;
+  backdrop-filter: blur(100px);
+  -webkit-backdrop-filter: blur(100px);
+  background-color: blue;
 }
 .glarePurple {
-    position: absolute;
-    transform: translateX(50%) translateY(50px);
-    z-index: 0;
-    opacity: 0.5;
-    border-radius: 50%;
-    filter: blur(100px);
-    width: 50%;
-    height: 200px;
-    backdrop-filter: blur(100px);
-    -webkit-backdrop-filter: blur(100px);
-    background-color: purple;
+  position: absolute;
+  transform: translateX(50%) translateY(50px);
+  z-index: 0;
+  opacity: 0.5;
+  border-radius: 50%;
+  filter: blur(100px);
+  width: 50%;
+  height: 200px;
+  backdrop-filter: blur(100px);
+  -webkit-backdrop-filter: blur(100px);
+  background-color: purple;
+}
+
+/* Изменение фона выпадающего календаря */
+.ant-picker-panel {
+  background-color: var(--tg-second-section-color) !important; /* Темный фон */
+}
+
+/* Цвет текста в календаре */
+.ant-picker-cell-inner,
+.ant-picker-header-view {
+  color: var(--tg-theme-text-color) !important; /* Цвет текста */
+}
+
+/* Цвет текста для текущего дня или выбранной даты */
+.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-cell-today .ant-picker-cell-inner {
+  color: var(--tg-theme-text-color) !important;
+}
+
+/* Стили для иконок (стрелки) */
+.ant-picker-prev-icon,
+.ant-picker-next-icon {
+  color: #fff !important; /* Белый цвет для стрелок */
+}
+.ant-picker input {
+  background-color: var(
+    --tg-second-section-color
+  ) !important; /* Фон поля ввода */
+  color: var(--tg-theme-text-color) !important; /* Цвет текста */
+  border: none; /* Убираем границу */
+}
+
+/* Изменение цвета текста для placeholder */
+.ant-picker input::placeholder {
+  color: var(--tg-theme-subtitle-text-color) !important; /* Цвет placeholder */
+}
+
+.ant-picker-footer {
+  color: var(--tg-theme-text-color) !important;
+  background-color: var(--tg-second-section-color) !important; /* Темный фон */
+}
+
+.ant-picker-time-panel-cell.ant-picker-time-panel-cell-selected {
+  background-color: '#000' !important;
+  color: var(--tg-theme-accent-text-color) !important;
+}
+
+.ant-picker .anticon {
+  color: var(--tg-theme-text-color) !important;
 }
