@@ -687,3 +687,96 @@ export async function getCategories(): Promise<Categories[] | false> {
     return false
   }
 }
+
+export async function subscribed() {
+  const instance = await axiosBase()
+  const user_id: number = window.Telegram.WebApp.initDataUnsafe.user
+    ?.id as number
+  try {
+    const result = await instance.get('/user/subscribed')
+    return result.data as boolean
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if (error.status === 401) {
+        return await HTTP401Exception(user_id, subscribed)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+export async function getShortcut(user_id: number): Promise<string | false> {
+  try {
+    const result = await axios.get(`${baseURL}/user/get/shortcut`, {
+      params: { user_id: user_id },
+    })
+    return result.data.created_at as string
+  } catch (error: any) {
+    return false
+  }
+}
+
+export async function addShortcut(user_id: number) {
+  try {
+    await axios.post(`${baseURL}/user/add/shortcut`, {
+      user_id: user_id,
+    })
+  } catch (error: any) {
+    return undefined
+  }
+}
+
+export async function updateShortcutTime(user_id: number, created_at: string) {
+  try {
+    await axios.patch(`${baseURL}/user/update/shortcut/time`, {
+      user_id: user_id,
+      created_at: created_at,
+    })
+  } catch (error: any) {
+    return undefined
+  }
+}
+
+export async function updateShortcutClicks(user_id: number, click: number) {
+  try {
+    await axios.patch(`${baseURL}/user/update/shortcut/time`, {
+      user_id: user_id,
+      count_clicks: click,
+    })
+  } catch (error: any) {
+    return undefined
+  }
+}
+
+export async function taskInfoSimple(user_id: number) {
+  try {
+    const result = await axios.get(`${baseURL}/user/task/completed/simple`, {
+      params: { user_id: user_id },
+    })
+    return result.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if (error.status === 401) {
+        return await HTTP401Exception(user_id, taskInfo, user_id)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
+export async function updateTask(
+  user_id: number,
+  task: 'invite' | 'shortcut' | 'subscription',
+  value: boolean | number,
+) {
+  try {
+    return await axios.patch(`${baseURL}/user/task/update`, {
+      user_id: user_id,
+      task: task,
+      value: value,
+    })
+  } catch (error: any) {
+    return false
+  }
+}

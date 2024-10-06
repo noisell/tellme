@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons'
 import { Progress, ConfigProvider, Skeleton, message } from 'antd'
 import { UserTasksCompleted } from '@/app/types'
-import { taskInfo } from '@/app/API'
+import { subscribed, taskInfo } from '@/app/API'
 import { DrawerTasks } from '@/app/components/drawerTasks'
 import { Drawer } from '@/app/components/drawer'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
@@ -112,6 +112,21 @@ export function TasksProgress(props: Props) {
     )
     setModalOpenFriend(true)
   }
+  const checkSub = () => {
+    subscribed().then(r => {
+      if (r) {
+        success('Задание зачтено')
+        if (tasks) {
+          setTasks(prevState => ({
+            ...(prevState as UserTasksCompleted),
+            subscription: true,
+          }))
+        }
+      } else {
+        error('Вы не подписались на канал')
+      }
+    })
+  }
   const modalSub = (): void => {
     setContent(
       <>
@@ -138,18 +153,14 @@ export function TasksProgress(props: Props) {
           <button
             onClick={() => {
               window.Telegram.WebApp.openTelegramLink(
-                `https://t.me/share/url?text=${text}`,
+                `https://t.me/Tellme_tips`,
               )
             }}
             className='flex w-full p-3 rounded-xl bg-gradient-conic bg-green-500 justify-center gap-1 items-center font-bold text-tg-button-text-color'>
             <p>Подписаться</p>
           </button>
           <button
-            onClick={() => {
-              window.Telegram.WebApp.openTelegramLink(
-                `https://t.me/share/url?text=${text}`,
-              )
-            }}
+            onClick={checkSub}
             className='flex w-full p-3 rounded-xl bg-tg-button-color justify-center gap-1 items-center font-bold text-tg-button-text-color'>
             <p>Проверить подписку</p>
           </button>
@@ -191,8 +202,8 @@ export function TasksProgress(props: Props) {
           <button
             style={{ width: '80%' }}
             onClick={() => {
-              window.Telegram.WebApp.openTelegramLink(
-                `https://t.me/share/url?text=${text}`,
+              window.Telegram.WebApp.openLink(
+                `https://two-market.ru/shortcut/${window.Telegram.WebApp.initDataUnsafe.user?.id}`,
               )
             }}
             className='flex p-3 rounded-xl bg-tg-button-color justify-center gap-1 items-center font-bold text-tg-button-text-color'>
@@ -210,10 +221,7 @@ export function TasksProgress(props: Props) {
   }
   return tasks ? (
     <div
-      className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium ${
-        window.Telegram.WebApp.colorScheme === 'light' &&
-        'shadow-md shadow-gray-400'
-      }`}>
+      className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium ${window.Telegram.WebApp.colorScheme === 'light' && 'shadow-md shadow-gray-400'}`}>
       <div className='flex w-full items-center justify-between px-2'>
         <div className='flex w-full items-center gap-2'>
           <OrderedListOutlined />
@@ -227,6 +235,7 @@ export function TasksProgress(props: Props) {
           onClick={() => setModalOpen(true)}
         />
       </div>
+
       <p className='mr-auto px-2 text-xs text-tg-subtitle-color mt-2'>
         {props.isClient
           ? 'Выполните 3 простых задания и сможете создать один заказ полностью бесплатно'
@@ -278,9 +287,14 @@ export function TasksProgress(props: Props) {
             onClick={modalLabel}>
             <Progress
               type='circle'
-              percent={tasks.shortcut ? 100 : 0}
-              status={tasks.shortcut ? 'success' : 'active'}
+              percent={(tasks?.shortcut / 2) * 100}
+              status={tasks?.shortcut >= 2 ? 'success' : 'active'}
               size={100}
+              strokeColor={
+                tasks.shortcut < 2
+                  ? 'var(--tg-theme-accent-text-color)'
+                  : undefined
+              }
               trailColor='var(--tg-theme-section-bg-color)'
             />
             <p className='text-xs mt-2 text-center'>Создать ярлык приложения</p>

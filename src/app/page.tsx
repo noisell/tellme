@@ -10,6 +10,7 @@ import {
   getCategories,
   getHistoryProjectExecutor,
   getLevels,
+  updateShortcutClicks,
   userInfoForPage,
 } from '@/app/API'
 import { OrdersAcceptSection } from '@/app/components/ordersAcceptSection'
@@ -128,10 +129,14 @@ export default function Home() {
   useEffect(() => {
     if (webApp && user) {
       const time_zone = Intl.DateTimeFormat().resolvedOptions().timeZone
-      if (params.has('inline') || params.has('url')) {
-        console.log('this authorization')
-        const start_param = window.Telegram.WebApp.initDataUnsafe.start_param
-        console.log('start_param: ', start_param)
+      const start_param = window.Telegram.WebApp.initDataUnsafe.start_param
+      if (
+        params.has('inline') ||
+        params.has('url') ||
+        (start_param &&
+          (start_param.includes('referrer') ||
+            start_param.includes('shortcut')))
+      ) {
         const start = async () => {
           const new_user = await authorization(
             user,
@@ -143,6 +148,9 @@ export default function Home() {
           else setAuth('user')
         }
         start()
+        if (start_param?.includes('shortcut')) {
+          updateShortcutClicks(user.id, 1).then()
+        }
         router.replace(pathname)
       } else {
         setAuth('user')

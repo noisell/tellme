@@ -53,7 +53,7 @@ export type PageState = {
 
 export type UserTasksCompleted = {
   subscription: boolean
-  shortcut: boolean
+  shortcut: number
   invite: number
 }
 
