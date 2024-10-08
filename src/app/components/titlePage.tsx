@@ -16,7 +16,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
-import { createExecutor, getCategories } from '@/app/API'
+import { createExecutor, getCategories, setCloudStorageItem } from '@/app/API'
 import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
 
@@ -156,6 +156,8 @@ export function TitlePage() {
           // @ts-ignore
           checkedKeys.map(item => +item),
         ).then(() => {
+          setCloudStorageItem('executor', 'true')
+
           setShowNavigation(true)
           router.refresh()
         })
@@ -265,7 +267,10 @@ export function TitlePage() {
               </p>
               <button
                 className='p-3 w-3/4 mt-10 text-tg-button-text-color bg-tg-button-color font-bold rounded-2xl'
-                onClick={() => router.refresh()}>
+                onClick={() => {
+                  router.refresh()
+                  setCloudStorageItem('executor', 'false')
+                }}>
                 Начать
               </button>
               <button

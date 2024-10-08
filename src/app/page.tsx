@@ -8,6 +8,7 @@ import { Categories, ExecutorResponseData, Level, PageState } from '@/app/types'
 import {
   authorization,
   getCategories,
+  getCloudStorageItem,
   getHistoryProjectExecutor,
   getLevels,
   updateShortcutClicks,
@@ -27,7 +28,6 @@ import {
 import { ConfigProvider, Spin } from 'antd'
 import User, { colorFind } from '@/app/components/user'
 import Link from 'next/link'
-import { text } from 'stream/consumers'
 
 export default function Home() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
@@ -201,7 +201,23 @@ export default function Home() {
     }
   }
 
-  console.log(activeProjects)
+  const [isExecutor, setIsExecutor] = useState<
+    'false' | 'true' | undefined | null
+  >(null)
+
+  const fetch = async () => {
+    const res = (await getCloudStorageItem('executor', false)) as
+      | 'false'
+      | 'true'
+      | undefined
+    setIsExecutor(res)
+  }
+  useEffect(() => {
+    fetch()
+  }, [])
+
+  console.log(isExecutor)
+  console.log(page)
 
   function executorPage(pageData: ExecutorResponseData) {
     setShowNavigation(true)
@@ -301,24 +317,6 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                {/* <div className='space-x-2 text-[12px] flex items-center justify-between'>
-              <div className='text-center flex-grow'>
-                <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center text-tg-accent-color'>
-                  {text}
-                </div>
-              </div>
-              <div className='text-center flex-grow flex-shrink-0 max-w-[80px]'>
-                <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center text-tg-accent-color'>
-                  {formatTime(seconds)}
-                </div>
-              </div>
-            </div> */}
-
-                <button
-                  className={`p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 ${true ? 'opacity-55 cursor-not-allowed' : 'cursor-pointer'}`}
-                  style={{ width: '100%' }}>
-                  Начать звонок
-                </button>
                 {activeProjects.length > 1 && (
                   <div className='flex justify-between mt-4 w-full gap-3'>
                     <button
@@ -364,15 +362,19 @@ export default function Home() {
     )
   }
 
-  return page ? (
-    page.page === 'executor' ? (
-      executorPage(page.data as ExecutorResponseData)
-    ) : page.page === 'newUser' ? (
-      <TitlePage />
-    ) : (
-      <User />
-    )
-  ) : (
+  if (isExecutor === 'false') {
+    return <User />
+  }
+
+  if (page && isExecutor === 'true') {
+    return executorPage(page.data as ExecutorResponseData)
+  }
+
+  if (page && page.page === 'newUser') {
+    return <TitlePage />
+  }
+
+  return (
     <div className='flex flex-col w-screen h-screen bg-tg-background-color items-center'>
       <ConfigProvider
         theme={{
@@ -393,4 +395,34 @@ export default function Home() {
       </h1>
     </div>
   )
+
+  // return page ? (
+  //   page.page === 'executor' ? (
+  //     executorPage(page.data as ExecutorResponseData)
+  //   ) : page.page === 'newUser' ? (
+  //     <TitlePage />
+  //   ) : (
+  //     <User />
+  //   )
+  // ) : (
+  //   <div className='flex flex-col w-screen h-screen bg-tg-background-color items-center'>
+  //     <ConfigProvider
+  //       theme={{
+  //         components: {
+  //           Spin: {
+  //             colorPrimary: 'var(--tg-theme-accent-text-color)',
+  //           },
+  //         },
+  //       }}>
+  //       <Spin
+  //         indicator={
+  //           <LoadingOutlined style={{ fontSize: 48, marginTop: '35vh' }} spin />
+  //         }
+  //       />
+  //     </ConfigProvider>
+  //     <h1 className='nameCompany loading-text text-4xl font-bold mt-5'>
+  //       Tellme
+  //     </h1>
+  //   </div>
+  // )
 }

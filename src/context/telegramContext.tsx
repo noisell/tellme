@@ -19,7 +19,7 @@ window.Telegram = {
   WebApp: {
     initDataUnsafe: {
       user: {
-        id: 228,
+        id: 223438,
         username: 'Nikita',
         first_name: 'Nikita228',
       },
@@ -48,18 +48,25 @@ window.Telegram = {
         value: string,
         callback?: (err: Error | null, success: boolean) => void,
       ): void {
+        console.log('setItem')
+
         if (!this.isValidKey(key)) {
           callback?.(new Error('Invalid key'), false)
           return
         }
+        console.log('setItem')
         if (value.length > 4096) {
           callback?.(new Error('Value exceeds maximum length'), false)
           return
         }
         try {
+          console.log(key, value)
+
           localStorage.setItem(key, value)
           callback?.(null, true)
         } catch (error) {
+          console.error(error)
+
           callback?.(error, false)
         }
       },

@@ -31,9 +31,14 @@ import {
   cancelProject,
   createProject,
   getCategories,
+  getExecutorInfoById,
   getLevels,
   getUserProject,
+  setCloudStorageItem,
 } from '@/app/API'
+import { useRouter } from 'next/navigation'
+import { useNav } from '@/context/navContext'
+import { div } from 'framer-motion/client'
 
 const { TextArea } = Input
 
@@ -97,6 +102,7 @@ export default function User() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
     undefined,
   )
+  const { setShowNavigation } = useNav()
   const [value, setValue] = useState<number | undefined>(undefined)
   const [time, setTime] = useState<number>(1)
   const [price, setPrice] = useState<number>(300)
@@ -146,6 +152,7 @@ export default function User() {
   const [currentCategory, setCurrentCategory] = useState<Categories | null>(
     null,
   )
+  const router = useRouter()
   const [tree, setTree] = useState<TreeCategories[] | undefined>(undefined)
   const [levelInfo, setLevelInfo] = useState<Level[] | undefined>(undefined)
   const [seconds, setSeconds] = useState(0)
@@ -276,6 +283,10 @@ export default function User() {
       }
     })
   }, [])
+
+  useEffect(() => {
+    setShowNavigation(false)
+  }, [setShowNavigation])
 
   const handleChange: DatePickerProps['onChange'] = (date, dateString) => {
     setDate(date)
@@ -410,6 +421,17 @@ export default function User() {
     })
   }
 
+  const handleChangeAccount = async () => {
+    const res = await getExecutorInfoById()
+
+    if (res) {
+      await setCloudStorageItem('executor', 'true')
+      window.location.reload()
+    } else {
+      router.replace('/new-executor')
+    }
+  }
+
   return (
     <main className='flex w-full flex-col bg-tg-secondary-background-color items-center'>
       <ConfigProvider
@@ -481,6 +503,7 @@ export default function User() {
             />
           </Link>
           <UserSwitchOutlined
+            onClick={() => handleChangeAccount()}
             style={{
               fontSize: '24px',
               color: 'var(--tg-theme-button-text-color)',
