@@ -469,10 +469,13 @@ export async function getHistoryProject(params: {
   }
 }
 
-export async function getHistoryProjectExecutor() {
+export async function getHistoryProjectExecutor(params: {
+  limit: number
+  offset: number
+}) {
   const instance = await axiosBase()
   try {
-    return (await instance.get('/project/active/executor')).data
+    return (await instance.get('/project/active/executor', { params })).data
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       if (error.status === 401) {

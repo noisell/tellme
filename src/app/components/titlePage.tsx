@@ -5,12 +5,14 @@ import {
   ConfigProvider,
   Input,
   message,
+  Spin,
   Tag,
   Tree,
   TreeDataNode,
   TreeProps,
 } from 'antd'
 import {
+  LoadingOutlined,
   MenuUnfoldOutlined,
   OrderedListOutlined,
   UserOutlined,
@@ -139,6 +141,7 @@ export function TitlePage() {
 
   const tagChild = tags.map(forMap)
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
   const newExecutor = () => {
     if (firstname === '') {
       warning('Введите имя пользователя!')
@@ -150,17 +153,20 @@ export function TitlePage() {
       warning('Выберите хотя бы одну категорию навык!')
     } else {
       if (firstname) {
+        setLoading(true)
         createExecutor(
           tags,
           firstname,
           // @ts-ignore
           checkedKeys.map(item => +item),
-        ).then(() => {
-          setCloudStorageItem('executor', 'true')
+        )
+          .then(() => {
+            setCloudStorageItem('executor', 'true')
 
-          setShowNavigation(true)
-          router.refresh()
-        })
+            setShowNavigation(true)
+            router.refresh()
+          })
+          .finally(() => setLoading(false))
       }
     }
   }
@@ -410,8 +416,18 @@ export function TitlePage() {
           <div className='flex flex-col items-center w-full mt-5 pb-5'>
             <button
               className='w-full bg-tg-button-color p-3 text-tg-button-text-color rounded-2xl'
-              onClick={newExecutor}>
-              Создать аккаунт
+              onClick={newExecutor}
+              disabled={loading}>
+              <div className='flex items-center gap-2'>
+                {loading && (
+                  <Spin
+                    indicator={
+                      <LoadingOutlined spin style={{ color: 'white' }} />
+                    }
+                  />
+                )}
+                Создать аккаунт
+              </div>
             </button>
           </div>
         </div>

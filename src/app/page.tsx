@@ -9,6 +9,7 @@ import {
   authorization,
   getCategories,
   getCloudStorageItem,
+  getExecutorProject,
   getHistoryProjectExecutor,
   getLevels,
   setCloudStorageItem,
@@ -188,7 +189,7 @@ export default function Home() {
   }, [webApp, user, auth])
 
   useEffect(() => {
-    getHistoryProjectExecutor().then(data => {
+    getExecutorProject().then(data => {
       setActiveProjects(data)
     })
   }, [])

@@ -1,7 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { ConfigProvider, message, Tree, TreeDataNode, TreeProps } from 'antd'
-import { MenuUnfoldOutlined } from '@ant-design/icons'
+import {
+  ConfigProvider,
+  message,
+  Spin,
+  Tree,
+  TreeDataNode,
+  TreeProps,
+} from 'antd'
+import { LoadingOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import {
   getCategories,
   getCategoriesExecutor,
@@ -15,7 +22,7 @@ export const Category = () => {
   const [treeData, setTreeData] = useState<TreeDataNode[]>([])
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([])
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true)
-
+  const [loading, setLoading] = useState<boolean>(false)
   const onExpand: TreeProps['onExpand'] = expandedKeysValue => {
     setExpandedKeys(expandedKeysValue)
     setAutoExpandParent(false)
@@ -55,10 +62,13 @@ export const Category = () => {
     if (checkedKeys.length === 0) {
       messageApi.error('Вы не выбрали ни одной категорию!')
     } else {
-      await updateCategories(checkedKeys.map(item => +item)).then(data => {
-        getUserCategories()
-        messageApi.success('Вы успешно изменили список категорий!')
-      })
+      setLoading(true)
+      await updateCategories(checkedKeys.map(item => +item))
+        .then(data => {
+          getUserCategories()
+          messageApi.success('Вы успешно изменили список категорий!')
+        })
+        .finally(() => setLoading(false))
     }
   }
 
@@ -133,10 +143,20 @@ export const Category = () => {
         {JSON.stringify(initCheckedKeys) !== JSON.stringify(checkedKeys) && (
           <div className='flex w-full items-center justify-between mt-3'>
             <button
-              className='p-3 bg-tg-button-color text-tg-text-color rounded-xl'
+              className='p-3 bg-tg-button-color text-tg-text-color rounded-xl flex items-center justify-center'
               style={{ width: '48%' }}
-              onClick={handleUpdate}>
-              Сохранить
+              onClick={handleUpdate}
+              disabled={loading}>
+              <div className='flex items-center gap-2'>
+                {loading && (
+                  <Spin
+                    indicator={
+                      <LoadingOutlined spin style={{ color: 'white' }} />
+                    }
+                  />
+                )}
+                Сохранить
+              </div>
             </button>
             <button
               className='p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'

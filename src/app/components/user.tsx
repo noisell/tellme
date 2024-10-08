@@ -8,6 +8,7 @@ import {
   Select,
   message,
   DatePickerProps,
+  Spin,
 } from 'antd'
 import {
   CheckCircleOutlined,
@@ -21,6 +22,7 @@ import {
   SolutionOutlined,
   UserOutlined,
   UserSwitchOutlined,
+  LoadingOutlined,
 } from '@ant-design/icons'
 import { TasksProgress } from '@/app/components/progress'
 import Link from 'next/link'
@@ -316,6 +318,7 @@ export default function User() {
     setSeconds(res?.seconds || 0)
   }
 
+  const [loadingSearch, setLoadingSearch] = useState(false)
   const onSubmit = () => {
     if (!value) {
       error('Сначала выберите категорию!')
@@ -417,8 +420,9 @@ export default function User() {
       executor_id: executorId ? +executorId : null,
       price: price,
     }
-
+    setLoadingSearch(true)
     createProject(data).then(r => {
+      setLoadingSearch(false)
       fetchProject()
       success('Заказ успешно создан!')
     })
@@ -884,8 +888,18 @@ export default function User() {
               </div>
               <button
                 onClick={() => onSubmit()}
-                className='flex w-full mt-3 items-center h-auto bg-tg-button-color rounded-2xl p-3 text-tg-button-text-color justify-center font-bold'>
-                Начать поиск · {price}₽
+                className='flex w-full mt-3 items-center h-auto bg-tg-button-color rounded-2xl p-3 text-tg-button-text-color justify-center font-bold flex items-center justify-center'
+                disabled={loadingSearch}>
+                <div className='flex items-center gap-2'>
+                  {loadingSearch && (
+                    <Spin
+                      indicator={
+                        <LoadingOutlined spin style={{ color: 'white' }} />
+                      }
+                    />
+                  )}
+                  Начать поиск · {price}₽
+                </div>
               </button>
               <p className='text-[10px] mt-1 w-full text-center text-tg-subtitle-color px-2'>
                 Создавая заказ вы принимаете нашу{' '}

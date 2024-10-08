@@ -25,11 +25,12 @@ export default function HistoryExecutorPage() {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   useEffect(() => {
-    getHistoryProjectExecutor({ limit: 1000, offset: 0 }).then(data => {
-      const res = data as ICustomType[]
-      setHistory(res)
-      setLoading(false)
-    })
+    getHistoryProjectExecutor({ limit: 1000, offset: 0 })
+      .then(data => {
+        const res = data as ICustomType[]
+        setHistory(res)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {

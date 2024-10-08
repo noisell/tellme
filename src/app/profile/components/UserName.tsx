@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { ConfigProvider, Input, message } from 'antd'
-import { UserOutlined } from '@ant-design/icons'
+import { ConfigProvider, Input, message, Spin } from 'antd'
+import { LoadingOutlined, UserOutlined } from '@ant-design/icons'
 import { getById, updateFirstName } from '@/app/API'
 import { useNav } from '@/context/navContext'
 import { GetByIdResponse } from '../../types'
@@ -10,7 +10,7 @@ export const UserName = () => {
   const { setShowNavigation, setActiveButton } = useNav()
   const [firstname, setFirstname] = useState<string>('')
   const [initFirstname, setInitFirstname] = useState<string>('')
-
+  const [loading, setLoading] = useState<boolean>(false)
   const handleFirstnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFirstname(e.target.value)
   }
@@ -38,13 +38,16 @@ export const UserName = () => {
     if (firstname === '') {
       messageApi.error('Имя пользователя не может быть пустым')
     } else {
-      updateFirstName(firstname).then(() => {
-        messageApi.open({
-          type: 'success',
-          content: 'Имя пользователя изменено',
+      setLoading(true)
+      updateFirstName(firstname)
+        .then(() => {
+          messageApi.open({
+            type: 'success',
+            content: 'Имя пользователя изменено',
+          })
+          getUserInfoById()
         })
-        getUserInfoById()
-      })
+        .finally(() => setLoading(false))
     }
   }
   return (
@@ -95,10 +98,20 @@ export const UserName = () => {
         {firstname !== initFirstname && (
           <div className='flex w-full items-center justify-between mt-3'>
             <button
-              className='p-3 bg-tg-button-color text-tg-text-color rounded-xl'
+              className='p-3 bg-tg-button-color text-tg-text-color rounded-xl flex gap-2 items-center justify-center'
               style={{ width: '48%' }}
-              onClick={handleChangeFirstName}>
-              Сохранить
+              onClick={handleChangeFirstName}
+              disabled={loading}>
+              <div className='flex items-center gap-2'>
+                {loading && (
+                  <Spin
+                    indicator={
+                      <LoadingOutlined spin style={{ color: 'white' }} />
+                    }
+                  />
+                )}
+                Сохранить
+              </div>
             </button>
             <button
               className='p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'

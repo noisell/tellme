@@ -1,13 +1,14 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { ConfigProvider, Input, message, Tag } from 'antd'
-import { OrderedListOutlined } from '@ant-design/icons'
+import { ConfigProvider, Input, message, Spin, Tag } from 'antd'
+import { LoadingOutlined, OrderedListOutlined } from '@ant-design/icons'
 import { getExecutorInfoById, updateSkills } from '@/app/API'
+import loading from '@/app/loading'
 
 export const Skills = () => {
   const [tags, setTags] = useState<string[]>([])
   const [initTags, setInitTags] = useState<string[]>([])
-
+  const [loading, setLoading] = useState(false)
   const [inputValue, setInputValue] = useState('')
 
   const handleClose = (removedTag: string) => {
@@ -39,10 +40,13 @@ export const Skills = () => {
     if (tags.length === 0) {
       messageApi.error('Напишите хотя бы один навык!')
     } else {
-      await updateSkills(tags).then(() => {
-        fetchData()
-        messageApi.success('Вы успешно изменили список навыков!')
-      })
+      setLoading(true)
+      await updateSkills(tags)
+        .then(() => {
+          fetchData()
+          messageApi.success('Вы успешно изменили список навыков!')
+        })
+        .finally(() => setLoading(false))
     }
   }
 
@@ -138,10 +142,20 @@ export const Skills = () => {
         {JSON.stringify(tags) !== JSON.stringify(initTags) && (
           <div className='flex w-full items-center justify-between mt-3'>
             <button
-              className='p-3 bg-tg-button-color text-tg-text-color rounded-xl'
+              className='p-3 bg-tg-button-color text-tg-text-color rounded-xl flex items-center justify-center'
               style={{ width: '48%' }}
-              onClick={handleUpdate}>
-              Сохранить
+              onClick={handleUpdate}
+              disabled={loading}>
+              <div className='flex items-center gap-2'>
+                {loading && (
+                  <Spin
+                    indicator={
+                      <LoadingOutlined spin style={{ color: 'white' }} />
+                    }
+                  />
+                )}
+                Сохранить
+              </div>
             </button>
             <button
               className='p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'

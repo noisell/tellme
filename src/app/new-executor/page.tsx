@@ -5,12 +5,14 @@ import {
   ConfigProvider,
   Input,
   message,
+  Spin,
   Tag,
   Tree,
   TreeDataNode,
   TreeProps,
 } from 'antd'
 import {
+  LoadingOutlined,
   MenuUnfoldOutlined,
   OrderedListOutlined,
   UserOutlined,
@@ -19,6 +21,7 @@ import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import { createExecutor, getCategories, setCloudStorageItem } from '@/app/API'
 import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
+import { div } from 'framer-motion/client'
 
 export default function NewExecutorPage() {
   const { setShowNavigation } = useNav()
@@ -38,7 +41,7 @@ export default function NewExecutorPage() {
     'Ремонтирую технику',
   ])
   const [inputValue, setInputValue] = useState('')
-
+  const [loading, setLoading] = useState<boolean>(false)
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([])
   const [checkedKeys, setCheckedKeys] = useState<React.Key[]>([])
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([])
@@ -149,16 +152,19 @@ export default function NewExecutorPage() {
       warning('Выберите хотя бы одну категорию навык!')
     } else {
       if (firstname) {
+        setLoading(true)
         createExecutor(
           tags,
           firstname,
           // @ts-ignore
           checkedKeys.map(item => +item),
-        ).then(() => {
-          setCloudStorageItem('executor', 'true')
-          setShowNavigation(true)
-          router.replace('/')
-        })
+        )
+          .then(() => {
+            setCloudStorageItem('executor', 'true')
+            setShowNavigation(true)
+            router.replace('/')
+          })
+          .finally(() => setLoading(false))
       }
     }
   }
@@ -297,9 +303,19 @@ export default function NewExecutorPage() {
         </div>
         <div className='flex flex-col items-center w-full mt-5 pb-5'>
           <button
-            className='w-full bg-tg-button-color p-3 text-tg-button-text-color rounded-2xl'
-            onClick={newExecutor}>
-            Создать аккаунт
+            className='w-full bg-tg-button-color p-3 text-tg-button-text-color rounded-2xl flex items-center justify-center'
+            onClick={newExecutor}
+            disabled={loading}>
+            <div className='flex items-center gap-2'>
+              {loading && (
+                <Spin
+                  indicator={
+                    <LoadingOutlined spin style={{ color: 'white' }} />
+                  }
+                />
+              )}
+              Создать аккаунт
+            </div>
           </button>
         </div>
       </div>
