@@ -508,15 +508,16 @@ export async function cancelProject(project_id: number) {
 
 export async function userInfoForPage(
   user: ITelegramUser,
+  currentPage?: "executor" | "user"
 ): Promise<PageState | null> {
   const user_info: UserData = await getUserInfo(user)
   if (!user_info) return null
   if (user_info.executor) {
-    const executerData: ExecuterData = await getExecutorInfo(user)
-    return {
-      page: 'executor',
-      data: { user: user_info, executor: executerData },
+    if (currentPage == "user") {
+      return { page: 'user', data: user_info }
     }
+    const executerData: ExecuterData = await getExecutorInfo(user)
+    return { page: 'executor', data: { user: user_info, executor: executerData } }
   } else {
     return { page: 'user', data: user_info }
   }

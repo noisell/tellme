@@ -423,9 +423,8 @@ export default function User() {
 
   const handleChangeAccount = async () => {
     const res = await getExecutorInfoById()
-
     if (res) {
-      await setCloudStorageItem('executor', 'true')
+      await setCloudStorageItem('currentPage', 'executor')
       window.location.reload()
     } else {
       router.replace('/new-executor')

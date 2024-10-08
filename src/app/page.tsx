@@ -10,7 +10,7 @@ import {
   getCategories,
   getCloudStorageItem,
   getHistoryProjectExecutor,
-  getLevels,
+  getLevels, setCloudStorageItem,
   updateShortcutClicks,
   userInfoForPage,
 } from '@/app/API'
@@ -163,12 +163,21 @@ export default function Home() {
   useEffect(() => {
     if (webApp && user && auth) {
       const start = async () => {
-        if (auth === 'user') {
-          const result = await userInfoForPage(user)
+        const currentPage = await getCloudStorageItem("currentPage", false)
+        if (!currentPage) {
+          if (auth === 'user') {
+            const result = await userInfoForPage(user)
+            if (!result) return
+            setPage(result)
+            await setCloudStorageItem("currentPage", result.page)
+          } else {
+            setPage({ page: 'newUser', data: null })
+          }
+        }
+        else {
+          const result = await userInfoForPage(user, currentPage as "user" || "executor")
           if (!result) return
           setPage(result)
-        } else {
-          setPage({ page: 'newUser', data: null })
         }
       }
       start()
@@ -201,24 +210,6 @@ export default function Home() {
     }
   }
 
-  const [isExecutor, setIsExecutor] = useState<
-    'false' | 'true' | undefined | null
-  >(null)
-
-  const fetch = async () => {
-    const res = (await getCloudStorageItem('executor', false)) as
-      | 'false'
-      | 'true'
-      | undefined
-    setIsExecutor(res)
-  }
-  useEffect(() => {
-    fetch()
-  }, [])
-
-  console.log(isExecutor)
-  console.log(page)
-
   function executorPage(pageData: ExecutorResponseData) {
     setShowNavigation(true)
     const user = pageData.user
@@ -240,7 +231,6 @@ export default function Home() {
           }
           incomeToday={executor.amount}
         />
-        <Link href={'/call/32'}>Звонок</Link>
         {activeOrder && (
           <>
             <div className='flex flex-col w-full h-auto items-center'>
@@ -362,19 +352,15 @@ export default function Home() {
     )
   }
 
-  if (isExecutor === 'false') {
-    return <User />
-  }
-
-  if (page && isExecutor === 'true') {
-    return executorPage(page.data as ExecutorResponseData)
-  }
-
-  if (page && page.page === 'newUser') {
-    return <TitlePage />
-  }
-
-  return (
+  return page ? (
+    page.page === 'executor' ? (
+      executorPage(page.data as ExecutorResponseData)
+    ) : page.page === 'newUser' ? (
+      <TitlePage />
+    ) : (
+      <User />
+    )
+  ) : (
     <div className='flex flex-col w-screen h-screen bg-tg-background-color items-center'>
       <ConfigProvider
         theme={{
@@ -395,34 +381,4 @@ export default function Home() {
       </h1>
     </div>
   )
-
-  // return page ? (
-  //   page.page === 'executor' ? (
-  //     executorPage(page.data as ExecutorResponseData)
-  //   ) : page.page === 'newUser' ? (
-  //     <TitlePage />
-  //   ) : (
-  //     <User />
-  //   )
-  // ) : (
-  //   <div className='flex flex-col w-screen h-screen bg-tg-background-color items-center'>
-  //     <ConfigProvider
-  //       theme={{
-  //         components: {
-  //           Spin: {
-  //             colorPrimary: 'var(--tg-theme-accent-text-color)',
-  //           },
-  //         },
-  //       }}>
-  //       <Spin
-  //         indicator={
-  //           <LoadingOutlined style={{ fontSize: 48, marginTop: '35vh' }} spin />
-  //         }
-  //       />
-  //     </ConfigProvider>
-  //     <h1 className='nameCompany loading-text text-4xl font-bold mt-5'>
-  //       Tellme
-  //     </h1>
-  //   </div>
-  // )
 }
