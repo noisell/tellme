@@ -49,7 +49,7 @@ export const TelegramContext = createContext<ITelegramContext>({})
 //         callback?: (err: Error | null, success: boolean) => void,
 //       ): void {
 //         console.log('setItem')
-//
+
 //         if (!this.isValidKey(key)) {
 //           callback?.(new Error('Invalid key'), false)
 //           return
@@ -61,12 +61,12 @@ export const TelegramContext = createContext<ITelegramContext>({})
 //         }
 //         try {
 //           console.log(key, value)
-//
+
 //           localStorage.setItem(key, value)
 //           callback?.(null, true)
 //         } catch (error) {
 //           console.error(error)
-//
+
 //           callback?.(error, false)
 //         }
 //       },

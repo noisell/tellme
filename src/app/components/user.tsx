@@ -352,6 +352,55 @@ export default function User() {
         error('Сначала выберите конец времени!')
         return
       }
+
+      // Извлечение строковых значений из объектов (если используете dayjs или moment)
+      const formattedDate = date.format('YYYY-MM-DD') // Пример для dayjs
+      const formattedStartTime = startTime.format('HH:mm') // Пример для dayjs
+      const formattedEndTime = endTime.format('HH:mm') // Пример для dayjs
+
+      // Форматируем строки для Date
+      const startDateTimeString = `${formattedDate}T${formattedStartTime}:00` // Добавляем секунды
+      const endDateTimeString = `${formattedDate}T${formattedEndTime}:00` // Добавляем секунды
+
+      // Проверка значений
+      console.log('Start DateTime String:', startDateTimeString) // Должен быть корректным
+      console.log('End DateTime String:', endDateTimeString) // Должен быть корректным
+
+      // Преобразуем в объекты Date
+      const startDateTime = new Date(startDateTimeString)
+      const endDateTime = new Date(endDateTimeString)
+
+      // Проверка на Invalid Date
+      console.log('Start DateTime:', startDateTime)
+      console.log('End DateTime:', endDateTime)
+
+      // Проверка на заднюю дату и время
+      const currentDateTime = new Date() // Текущее время
+      if (startDateTime < currentDateTime) {
+        error('Начало времени не может быть в прошлом!')
+        return
+      }
+      if (endDateTime < currentDateTime) {
+        error('Конец времени не может быть в прошлом!')
+        return
+      }
+
+      // Проверка корректности начала и конца времени
+      if (startDateTime >= endDateTime) {
+        error('Начало времени не может быть позже конца!')
+        return
+      }
+
+      // Проверка минимальной разницы между endTime и startTime
+      const diffInMilliseconds = endDateTime.getTime() - startDateTime.getTime() // Используем getTime()
+      const diffInHours = diffInMilliseconds / (1000 * 60 * 60) // Конвертируем в часы
+
+      if (diffInHours < 1) {
+        error(
+          'Разница между началом и концом времени должна быть не менее 1 часа!',
+        )
+        return
+      }
     }
 
     const data = {
@@ -668,7 +717,17 @@ export default function User() {
                       ),
                     }}
                     onChange={onChange}
-                    treeData={tree}
+                    treeData={tree.map(node => ({
+                      ...node,
+                      disabled: node.children && node.children.length > 0, // Если есть дети, узел отключен
+                      children: node.children
+                        ? node.children.map(child => ({
+                            ...child,
+                            disabled:
+                              child.children && child.children.length > 0, // Рекурсивно проверяем детей
+                          }))
+                        : [],
+                    }))} // Используем модифицированные данные
                     onPopupScroll={onPopupScroll}
                     size='large'
                     suffixIcon={

@@ -508,16 +508,19 @@ export async function cancelProject(project_id: number) {
 
 export async function userInfoForPage(
   user: ITelegramUser,
-  currentPage?: "executor" | "user"
+  currentPage?: 'executor' | 'user',
 ): Promise<PageState | null> {
   const user_info: UserData = await getUserInfo(user)
   if (!user_info) return null
   if (user_info.executor) {
-    if (currentPage == "user") {
+    if (currentPage == 'user') {
       return { page: 'user', data: user_info }
     }
     const executerData: ExecuterData = await getExecutorInfo(user)
-    return { page: 'executor', data: { user: user_info, executor: executerData } }
+    return {
+      page: 'executor',
+      data: { user: user_info, executor: executerData },
+    }
   } else {
     return { page: 'user', data: user_info }
   }
@@ -548,6 +551,23 @@ export async function taskInfo(user_id: number) {
     if (axios.isAxiosError(error)) {
       if (error.status === 401) {
         return await HTTP401Exception(user_id, taskInfo, user_id)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
+export async function getTaskInfo() {
+  const instance = await axiosBase()
+  const user_id = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  try {
+    const result = await instance.get('/user/task/completed')
+    return result.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if (error.status === 401) {
+        return await HTTP401Exception(user_id, taskInfo)
       }
     } else if (error instanceof Error) {
       console.error(error.message)

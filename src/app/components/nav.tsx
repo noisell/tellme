@@ -7,7 +7,7 @@ import { useNav } from '@/context/navContext'
 
 export function Nav() {
   const router = useRouter()
-  const { activeButton, showNavigation } = useNav()
+  const { activeButton, showNavigation, setActiveButton } = useNav()
   const handleClick = (href: string) => {
     router.push(href)
   }

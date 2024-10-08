@@ -206,3 +206,10 @@ main {
 .ant-picker .anticon {
   color: var(--tg-theme-text-color) !important;
 }
+
+:where(.css-dev-only-do-not-override-l4vlnr).ant-tree-select-dropdown
+  .ant-select-tree
+  .ant-select-tree-treenode-disabled
+  .ant-select-tree-node-content-wrapper {
+  color: var(--tg-theme-text-color) !important;
+}

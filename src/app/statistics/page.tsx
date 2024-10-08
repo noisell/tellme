@@ -5,10 +5,10 @@ import { BarChartOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
 import { getStatisticsFinance, getStatisticsOrders } from '../API'
-import { data } from 'framer-motion/client'
+import { LoadingComponent } from '../components/loadingComponent'
 
 export default function StatisticPage() {
-  const { setActiveButton } = useNav()
+  const { setActiveButton, setShowNavigation } = useNav()
   const router = useRouter()
   const [financeData, setFinanceData] = useState({
     day: {
@@ -38,7 +38,9 @@ export default function StatisticPage() {
       percent: 12.54,
     },
   })
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
+    setShowNavigation(true)
     setActiveButton('/statistics')
     const backButton = window.Telegram.WebApp.BackButton
     backButton.show()
@@ -65,10 +67,17 @@ export default function StatisticPage() {
   }
 
   useEffect(() => {
+    setLoading(true)
     // @ts-ignore
-    getStatisticsFinance().then(res => setFinanceData(res))
-    getStatisticsOrders().then(res => setOrdersData(res))
+    getStatisticsFinance()
+      .then(res => setFinanceData(res))
+      .finally(() => setLoading(false))
+    getStatisticsOrders()
+      .then(res => setOrdersData(res))
+      .finally(() => setLoading(false))
   }, [])
+
+  if (loading) return <LoadingComponent />
 
   return (
     <main className='flex flex-col bg-tg-secondary-background-color items-center'>

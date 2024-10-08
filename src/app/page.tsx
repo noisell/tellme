@@ -10,7 +10,8 @@ import {
   getCategories,
   getCloudStorageItem,
   getHistoryProjectExecutor,
-  getLevels, setCloudStorageItem,
+  getLevels,
+  setCloudStorageItem,
   updateShortcutClicks,
   userInfoForPage,
 } from '@/app/API'
@@ -163,19 +164,21 @@ export default function Home() {
   useEffect(() => {
     if (webApp && user && auth) {
       const start = async () => {
-        const currentPage = await getCloudStorageItem("currentPage", false)
+        const currentPage = await getCloudStorageItem('currentPage', false)
         if (!currentPage) {
           if (auth === 'user') {
             const result = await userInfoForPage(user)
             if (!result) return
             setPage(result)
-            await setCloudStorageItem("currentPage", result.page)
+            await setCloudStorageItem('currentPage', result.page)
           } else {
             setPage({ page: 'newUser', data: null })
           }
-        }
-        else {
-          const result = await userInfoForPage(user, currentPage as "user" || "executor")
+        } else {
+          const result = await userInfoForPage(
+            user,
+            (currentPage as 'user') || 'executor',
+          )
           if (!result) return
           setPage(result)
         }
