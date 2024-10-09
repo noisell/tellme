@@ -561,6 +561,23 @@ export async function taskInfo(user_id: number) {
   }
 }
 
+export async function getUserFree() {
+  const instance = await axiosBase()
+  const user_id = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  try {
+    const result = await instance.get('/user/free')
+    return result.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if (error.status === 401) {
+        return await HTTP401Exception(user_id, getUserFree)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
 export async function getTaskInfo() {
   const instance = await axiosBase()
   const user_id = window.Telegram.WebApp.initDataUnsafe.user?.id as number

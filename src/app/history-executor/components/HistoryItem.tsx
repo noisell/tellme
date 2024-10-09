@@ -106,9 +106,10 @@ export const HistoryItem = ({
 
       {/* Блок с содержимым, который будет открываться и закрываться */}
       <div
-        className={`transition-all duration-300 ml-4 ease-in-out overflow-hidden w-full text-left ${
-          open ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0'
-        }`}>
+        className={`transition-all duration-300 ease-in-out w-full text-left overflow-hidden`}
+        style={{
+          maxHeight: open ? '300px' : '0', // Ограничиваем высоту при закрытом состоянии
+        }}>
         <div className='text-[14px] w-full text-left mt-2'>
           <span className='text-tg-subtitle-color'>Уровень: </span>{' '}
           <span style={{ color: `${color}` }}>

@@ -35,12 +35,15 @@ import {
   getCategories,
   getExecutorInfoById,
   getLevels,
+  getTaskInfo,
+  getUserFree,
   getUserProject,
   setCloudStorageItem,
 } from '@/app/API'
 import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
-import { div } from 'framer-motion/client'
+import { Modal } from 'antd'
+import { main } from 'framer-motion/client'
 
 const { TextArea } = Input
 
@@ -55,6 +58,7 @@ export const colorFind: Record<number, string> = {
   2: 'rgb(59 130 246)',
   3: 'rgb(34 197 94)',
   4: 'rgb(168 85 247)',
+  5: 'rgb(255 255 255)',
 }
 export const times = [
   { value: 1, label: '30 мин' },
@@ -159,7 +163,18 @@ export default function User() {
   const [levelInfo, setLevelInfo] = useState<Level[] | undefined>(undefined)
   const [seconds, setSeconds] = useState(0)
   const [messageApi, contextHolder] = message.useMessage()
+  const [taskInfo, setTaskInfo] = useState<{
+    subscription: boolean
+    shortcut: number
+    invite: number
+  }>({ subscription: false, shortcut: 0, invite: 0 })
   const [levelsData, setLevelsData] = useState([
+    {
+      value: 5,
+      label: (
+        <p className='text-[15px] text-tg-text-color'>Новичок бесплатно</p>
+      ),
+    },
     {
       value: 1,
       label: (
@@ -194,6 +209,12 @@ export default function User() {
     },
   ])
 
+  useEffect(() => {
+    getTaskInfo().then(result => {
+      setTaskInfo(result)
+    })
+  }, [])
+
   const error = (text: string) => {
     messageApi
       .open({
@@ -222,7 +243,10 @@ export default function User() {
       categories as Categories[],
       newValue,
     ) as Categories
+    console.log('level', level)
+
     setPrice(category.price[levelFind[level]] * time)
+
     setCurrentCategory(category)
   }
   const formatTime = (seconds: number): string => {
@@ -233,17 +257,29 @@ export default function User() {
 
   const onChangeLevel = (option: TimeOption) => {
     const { value } = option
+
+    if (value === 5) {
+      if (
+        taskInfo.invite !== 2 ||
+        taskInfo.shortcut !== 2 ||
+        !taskInfo.subscription
+      ) {
+        messageApi.warning('Выполните все задания для бесплатного заказа')
+        return
+      }
+    }
+
     if (!currentCategory) {
       error('Сначала выберите категорию!')
       return
     }
     setLevel(value)
-    const currentLevel = levelInfo?.find(lvl => lvl.id === value)
-    success(
-      `${currentLevel?.name}: от ${
-        currentLevel?.count_orders_start
-      } советов | ${currentCategory.price[levelFind[value]]}₽/30 мин`,
-    )
+    // const currentLevel = levelInfo?.find(lvl => lvl.id === value)
+    // success(
+    //   `${currentLevel?.name}: от ${
+    //     currentLevel?.count_orders_start
+    //   } советов | ${currentCategory.price[levelFind[value]]}₽/30 мин`,
+    // )
     setPrice(currentCategory.price[levelFind[value]] * time)
   }
   const onChangeTime = (option: TimeOption) => {
@@ -266,25 +302,45 @@ export default function User() {
       }
     })
   }, [])
+
   useEffect(() => {
-    getLevels().then(r => {
-      if (r) {
-        setLevelsData(
-          r.map(item => ({
-            value: item.id,
-            label: (
-              <p
-                className='text-[15px]'
-                style={{ color: `${colorFind[item.id]}` }}>
-                {item.name}
-              </p>
-            ),
-          })),
-        )
-        setLevelInfo(r)
-      }
-    })
-  }, [])
+    // Define an async function inside useEffect because useEffect itself can't be async
+    const fetchData = async () => {
+      const free = await getUserFree() // Fetch the free status
+
+      getLevels().then(r => {
+        if (r) {
+          let allLevels = [...r] // Start with the existing levels
+
+          // Conditionally add the new level based on the 'free' value
+          if (free) {
+            const newLevel = {
+              id: 5,
+              name: 'Новичок (бесплатно)',
+            }
+            // @ts-ignore
+            allLevels = [newLevel, ...allLevels]
+          }
+
+          setLevelsData(
+            allLevels.map(item => ({
+              value: item.id,
+              label: (
+                <p
+                  className='text-[15px]'
+                  style={{ color: `${colorFind[item.id]}` }}>
+                  {item.name}
+                </p>
+              ),
+            })),
+          )
+          setLevelInfo(r) // Keep the original level info
+        }
+      })
+    }
+
+    fetchData() // Invoke the async function
+  }, []) // Empty dependency array ensures this only runs on component mount
 
   useEffect(() => {
     setShowNavigation(false)
@@ -408,7 +464,7 @@ export default function User() {
 
     const data = {
       category_id: value,
-      level_id: level,
+      level_id: level === 5 ? 1 : level,
       time: time,
       question: question,
       interval: !fast
@@ -418,7 +474,7 @@ export default function User() {
           }
         : null,
       executor_id: executorId ? +executorId : null,
-      price: price,
+      price: level === 0 ? 0 : price,
     }
     setLoadingSearch(true)
     createProject(data).then(r => {
@@ -484,8 +540,127 @@ export default function User() {
     }
   }
 
+  function collectCategoryData(categories: any) {
+    // @ts-ignore
+    const result = []
+
+    // @ts-ignore
+    function traverse(category) {
+      // Добавляем объект с id и name в массив
+      result.push({ id: category.id, name: category.name })
+
+      // Если у категории есть вложенные, проходим по ним
+      if (category.children && category.children.length > 0) {
+        // @ts-ignore
+        category.children.forEach(child => traverse(child))
+      }
+    }
+
+    // Итерируем по всем корневым категориям
+    // @ts-ignore
+    categories.forEach(category => traverse(category))
+
+    // @ts-ignore
+    return result
+  }
+  console.log(categories)
+  const [categoriesData, setCategoriesData] = useState<string[]>([])
+  const category = [
+    'Эксперт не подключился',
+    'Проблема не решена',
+    'Эксперт не компетентный',
+    'Плохое качество связи',
+  ]
+
   return (
     <main className='flex w-full flex-col bg-tg-secondary-background-color items-center'>
+      <ConfigProvider
+        theme={{
+          components: {
+            Modal: {
+              contentBg: 'var(--tg-theme-section-bg-color)',
+              headerBg: 'var(--tg-theme-section-bg-color)',
+              titleColor: 'var(--tg-theme-text-color)',
+              colorText: 'var(--tg-theme-text-color)',
+            },
+            Input: {
+              colorBgContainer: 'var(--tg-second-section-color)',
+              colorBorder: 'transparent',
+              colorText: 'var(--tg-theme-text-color)',
+              colorTextPlaceholder: 'var(--tg-theme-subtitle-text-color)',
+              borderRadiusLG: 12,
+              activeBorderColor: 'transparent',
+              activeShadow: 'transparent',
+              hoverBorderColor: 'transparent',
+            },
+          },
+        }}>
+        {/* <Modal
+          title='Опишите вашу проблему'
+          open={true}
+          style={{ background: 'var(--tg-theme-bg-color)' }}
+          closable={false}
+          maskClosable={false}
+          centered
+          footer={
+            <div className='flex gap-2 justify-between mt-5'>
+              <button className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                Открыть спор
+              </button>
+              <button className='w-full p-3 bg-green-500 text-tg-button-text-color rounded-xl'>
+                Уступить
+              </button>
+            </div>
+          }>
+          <div className='flex flex-wrap gap-2 mb-3'>
+            {category?.map(category => (
+              <button
+                key={category}
+                className={`text-[12px] rounded-xl px-2 py-1 ${!categoriesData.includes(category) ? 'bg-tg-section-second-color text-tg-text-color' : 'bg-tg-button-color text-tg-button-text-color'}`}
+                onClick={() => {
+                  if (categoriesData.includes(category)) {
+                    setCategoriesData(
+                      categoriesData.filter(item => item !== category),
+                    )
+                  } else {
+                    setCategoriesData([...categoriesData, category])
+                  }
+                }}>
+                {category}
+              </button>
+            ))}
+          </div>
+          <TextArea
+            autoSize={{ minRows: 4, maxRows: 10 }}
+            size='large'
+            value={question}
+            onChange={e => setQuestion(e.target.value)}
+            placeholder='Опишите проблему'
+          />
+        </Modal> */}
+        {/* <Modal
+          title='Эксперт решил ваш вопрос?'
+          open={true}
+          style={{ background: 'var(--tg-theme-bg-color)' }}
+          closable={false}
+          maskClosable={false}
+          centered
+          footer={
+            <div className='flex gap-2 justify-between mt-5'>
+              <button className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                Не решил
+              </button>
+              <button className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                Всё супер!
+              </button>
+            </div>
+          }>
+          <p className='text-tg-subtitle-color'>
+            Такое же окно получит эксперт, если ваши ответы не совпадут, то
+            будет открыт спор
+          </p>
+        </Modal> */}
+      </ConfigProvider>
       <ConfigProvider
         theme={{
           components: {
@@ -616,8 +791,9 @@ export default function User() {
                 <div className='text-center flex-grow flex-shrink-0'>
                   <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center'>
                     {
-                      categories?.find(c => c.id === activeOrder.category_id)
-                        ?.name
+                      collectCategoryData(categories)?.find(
+                        c => c.id === activeOrder.category_id,
+                      )?.name
                     }
                   </div>
                 </div>
@@ -765,15 +941,16 @@ export default function User() {
                 <Select
                   labelInValue
                   // @ts-ignore
-                  value={time}
+                  value={level === 5 ? 1 : time}
                   options={times}
                   onChange={onChangeTime}
+                  disabled={level === 5}
                   size='large'
                   suffixIcon={
                     <DownOutlined
                       style={{
                         fontSize: '15px',
-                        color: 'var(--tg-theme-accent-text-color)',
+                        color: `${level === 5 ? 'var(--tg-theme-subtitle-text-color)' : 'var(--tg-theme-accent-text-color)'}`,
                       }}
                     />
                   }
@@ -898,7 +1075,7 @@ export default function User() {
                       }
                     />
                   )}
-                  Начать поиск · {price}₽
+                  Начать поиск · {level === 5 ? '0' : price}₽
                 </div>
               </button>
               <p className='text-[10px] mt-1 w-full text-center text-tg-subtitle-color px-2'>

@@ -4,14 +4,21 @@ import React, { useEffect, useState } from 'react'
 import {
   OrderedListOutlined,
   ExclamationCircleOutlined,
+  CloseOutlined,
 } from '@ant-design/icons'
 import { Progress, ConfigProvider, Skeleton, message } from 'antd'
 import { UserTasksCompleted } from '@/app/types'
-import { subscribed, taskInfo } from '@/app/API'
+import {
+  getCloudStorageItem,
+  setCloudStorageItem,
+  subscribed,
+  taskInfo,
+} from '@/app/API'
 import { DrawerTasks } from '@/app/components/drawerTasks'
 import { Drawer } from '@/app/components/drawer'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ReplyIcon from '@mui/icons-material/Reply'
+import Image from 'next/image'
 
 interface Props {
   user_id: number
@@ -28,6 +35,10 @@ export function TasksProgress(props: Props) {
   const botUrl = 'https://t.me/ссылка-на-бота'
   const text = `Привет дорогой друг! Присоединяйся к Tellme - ${botUrl}`
   const [messageApi, contextHolder] = message.useMessage()
+  const [typeAccount, setTypeAccount] = useState<'user' | 'executor' | null>(
+    'user',
+  )
+  const [showTasks, setShowTasks] = useState<'false' | 'true'>('true')
   const error = (text: string) => {
     messageApi
       .open({
@@ -57,12 +68,28 @@ export function TasksProgress(props: Props) {
       console.error('Ошибка копирования:', er)
     }
   }
+  const fetchTypeAccount = async () => {
+    const res = (await getCloudStorageItem('currentPage', false)) as
+      | 'user'
+      | 'executor'
+    setTypeAccount(res)
+  }
+
+  const fetchShowTasks = async () => {
+    const res = (await getCloudStorageItem('showTasks', false)) as
+      | 'true'
+      | 'false'
+    setShowTasks(res)
+  }
+
   useEffect(() => {
     taskInfo(props.user_id).then(r => {
       if (r) {
         setTasks(r)
       }
     })
+    fetchTypeAccount()
+    fetchShowTasks()
   }, [])
   const modalFriend = (): void => {
     setContent(
@@ -219,6 +246,50 @@ export function TasksProgress(props: Props) {
     )
     setModalOpenLabel(true)
   }
+
+  const [view, setView] = useState(true)
+
+  const handleClose = async () => {
+    await setCloudStorageItem('showTasks', 'false')
+    setView(false)
+  }
+
+  if (tasks?.subscription && tasks.invite === 2 && tasks.shortcut === 2) {
+    if (!view) return null
+    if (showTasks === 'false') return null
+
+    return (
+      <div
+        className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium ${window.Telegram.WebApp.colorScheme === 'light' && 'shadow-md shadow-gray-400'}`}>
+        <div className='flex w-full items-center justify-between px-2'>
+          <div className='flex w-full items-center gap-2'>
+            <OrderedListOutlined />
+            <span>Все задания выполнены</span>
+          </div>
+
+          <CloseOutlined onClick={() => handleClose()} />
+        </div>
+        <div className='flex justify-between items-center px-4 rounded-xl w-full'>
+          <Image
+            src='/party-confetti.gif'
+            width={150}
+            height={150}
+            alt='Вечерника'
+          />
+          <div>
+            <p>Задания выполнены!</p>
+            <p className='text-xs mt-3 text-tg-subtitle-color text-left'>
+              {typeAccount === 'executor' &&
+                'Поздравляем!!! Теперь вы можете принимать заказы и повышать свой уровень'}
+              {typeAccount === 'user' &&
+                'Поздравляем!!! Теперь вам доступен бесплатный заказ у эксперта новичка'}
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return tasks ? (
     <div
       className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium ${window.Telegram.WebApp.colorScheme === 'light' && 'shadow-md shadow-gray-400'}`}>

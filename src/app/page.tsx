@@ -22,14 +22,25 @@ import { ScheduleSection } from '@/app/components/scheduleSection'
 import { TasksProgress } from '@/app/components/progress'
 import { TitlePage } from '@/app/components/titlePage'
 import {
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
   CaretRightOutlined,
   CheckCircleOutlined,
+  ClockCircleOutlined,
+  CommentOutlined,
+  ExclamationCircleOutlined,
+  InboxOutlined,
   LoadingOutlined,
   SolutionOutlined,
+  WarningOutlined,
 } from '@ant-design/icons'
-import { ConfigProvider, Spin } from 'antd'
+import { ConfigProvider, Modal, Spin } from 'antd'
 import User, { colorFind } from '@/app/components/user'
 import Link from 'next/link'
+import Dragger from 'antd/es/upload/Dragger'
+import { div } from 'framer-motion/client'
+import { TextDispute } from './components/text-dispute'
+import { DisputeItem } from './components/dispute-item'
 
 export default function Home() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
@@ -214,12 +225,58 @@ export default function Home() {
     }
   }
 
+  const [showAllText, setShowAllText] = useState(false)
+
   function executorPage(pageData: ExecutorResponseData) {
     setShowNavigation(true)
     const user = pageData.user
     const executor = pageData.executor
     return (
       <main className='flex w-full flex-col bg-tg-secondary-background-color items-center'>
+        <ConfigProvider
+          theme={{
+            components: {
+              Modal: {
+                contentBg: 'var(--tg-theme-section-bg-color)',
+                headerBg: 'var(--tg-theme-section-bg-color)',
+                titleColor: 'var(--tg-theme-text-color)',
+                colorText: 'var(--tg-theme-text-color)',
+              },
+              Input: {
+                colorBgContainer: 'var(--tg-second-section-color)',
+                colorBorder: 'transparent',
+                colorText: 'var(--tg-theme-text-color)',
+                colorTextPlaceholder: 'var(--tg-theme-subtitle-text-color)',
+                borderRadiusLG: 12,
+                activeBorderColor: 'transparent',
+                activeShadow: 'transparent',
+                hoverBorderColor: 'transparent',
+              },
+            },
+          }}>
+          <Modal
+            title='Решили ли вы вопрос?'
+            open={false}
+            style={{ background: 'var(--tg-theme-bg-color)' }}
+            closable={false}
+            maskClosable={false}
+            centered
+            footer={
+              <div className='flex gap-2 justify-between mt-5'>
+                <button className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                  Не решил
+                </button>
+                <button className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                  Всё супер!
+                </button>
+              </div>
+            }>
+            <p className='text-tg-subtitle-color'>
+              Такое же окно получит заказчик, если ваши ответы не совпадут, то
+              будет открыт спор
+            </p>
+          </Modal>
+        </ConfigProvider>
         <HeaderSection
           levelID={executor.level.id}
           first_name={user.name}
@@ -235,6 +292,43 @@ export default function Home() {
           }
           incomeToday={executor.amount}
         />
+        <div className='flex flex-col w-full h-auto items-center'>
+          <div
+            className={`flex flex-col w-full h-auto mt-3 bg-tg-section-color rounded-3xl py-4 px-4 ${
+              window.Telegram.WebApp.colorScheme === 'light' &&
+              'shadow-md shadow-gray-400'
+            }`}>
+            <div className='flex flex-col w-full items-center justify-between mt-1 font-medium mb-3 px-1'>
+              <div className='flex items-center justify-between w-full'>
+                <div className='flex w-full items-center gap-2 text-tg-destructive-text-color'>
+                  <ExclamationCircleOutlined />
+                  <div>
+                    <button
+                      className={`text-tg-destructive-text-color text-[14px]`}
+                      style={{ width: '100%' }}>
+                      Активные споры
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <DisputeItem />
+              <div className='flex justify-between mt-4 w-full gap-3'>
+                <button
+                  className='bg-tg-section-second-color aspect-square text-tg-button-text-color rounded-xl py-2 px-4'
+                  onClick={prev} // функция для перехода на предыдущую страницу
+                >
+                  <ArrowLeftOutlined />
+                </button>
+                <button
+                  className='bg-tg-section-second-color aspect-square text-tg-button-text-color rounded-xl py-2 px-4'
+                  onClick={next} // функция для перехода на следующую страницу
+                >
+                  <ArrowRightOutlined />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         {activeOrder && (
           <>
             <div className='flex flex-col w-full h-auto items-center'>
@@ -314,16 +408,16 @@ export default function Home() {
                 {activeProjects.length > 1 && (
                   <div className='flex justify-between mt-4 w-full gap-3'>
                     <button
-                      className='w-full bg-tg-button-color text-tg-button-text-color rounded-xl py-2 px-4'
+                      className='bg-tg-section-second-color aspect-square text-tg-button-text-color rounded-xl py-2 px-4'
                       onClick={prev} // функция для перехода на предыдущую страницу
                     >
-                      Пред
+                      <ArrowLeftOutlined />
                     </button>
                     <button
-                      className='w-full bg-tg-button-color text-tg-button-text-color rounded-xl py-2 px-4'
+                      className='bg-tg-section-second-color aspect-square text-tg-button-text-color rounded-xl py-2 px-4'
                       onClick={next} // функция для перехода на следующую страницу
                     >
-                      След
+                      <ArrowRightOutlined />
                     </button>
                   </div>
                 )}

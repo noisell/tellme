@@ -16,31 +16,31 @@ const inter = Inter({ subsets: ['cyrillic'] })
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [isTelegramAvailable, setIsTelegramAvailable] = useState<
-    boolean | null
-  >(null)
+  // const [isTelegramAvailable, setIsTelegramAvailable] = useState<
+  //   boolean | null
+  // >(null)
 
-  const pathname = usePathname()
+  // const pathname = usePathname()
 
-  useEffect(() => {
-    if (pathname.includes('/shortcut')) {
-      setIsTelegramAvailable(true)
-      return
-    }
+  // useEffect(() => {
+  //   if (pathname.includes('/shortcut')) {
+  //     setIsTelegramAvailable(true)
+  //     return
+  //   }
 
-    // Check if we are in the browser and if Telegram is available
-    if (
-      typeof window !== 'undefined' &&
-      window.Telegram &&
-      window.Telegram.WebApp &&
-      window.Telegram.WebApp.initDataUnsafe &&
-      window.Telegram.WebApp.initDataUnsafe.user
-    ) {
-      setIsTelegramAvailable(true)
-    } else {
-      setIsTelegramAvailable(false)
-    }
-  }, [])
+  //   // Check if we are in the browser and if Telegram is available
+  //   if (
+  //     typeof window !== 'undefined' &&
+  //     window.Telegram &&
+  //     window.Telegram.WebApp &&
+  //     window.Telegram.WebApp.initDataUnsafe &&
+  //     window.Telegram.WebApp.initDataUnsafe.user
+  //   ) {
+  //     setIsTelegramAvailable(true)
+  //   } else {
+  //     setIsTelegramAvailable(false)
+  //   }
+  // }, [])
 
   return (
     <html lang='en'>
@@ -52,22 +52,21 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        {!isTelegramAvailable && (
+        {/* {!isTelegramAvailable && (
           <div className='flex items-center justify-center min-h-screen max-w-[230px] text-center'>
             Зайдите в Telegram для взаимодействия с ботом
           </div>
-        )}
-        {isTelegramAvailable && (
-          <TelegramProvider>
-            <NavProvider>
-              <AntdRegistry>
-                {children}
+        )} */}
 
-                <Nav />
-              </AntdRegistry>
-            </NavProvider>
-          </TelegramProvider>
-        )}
+        <TelegramProvider>
+          <NavProvider>
+            <AntdRegistry>
+              {children}
+
+              <Nav />
+            </AntdRegistry>
+          </NavProvider>
+        </TelegramProvider>
       </body>
     </html>
   )

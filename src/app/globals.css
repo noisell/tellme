@@ -213,3 +213,11 @@ main {
   .ant-select-tree-node-content-wrapper {
   color: var(--tg-theme-text-color) !important;
 }
+
+.ant-select-disabled .ant-select-selector .ant-select-selection-item {
+  color: var(--tg-theme-subtitle-text-color) !important;
+}
+
+.ant-upload.ant-upload-drag {
+  border-color: 'red' !important;
+}
