@@ -3,6 +3,7 @@
 import {
   ClockCircleOutlined,
   ExclamationCircleOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons'
 import React, { useEffect, useRef, useState } from 'react'
 import { DrawerSchedule } from '@/app/components/drawerSchedule'
@@ -309,7 +310,7 @@ export function ScheduleSection(props: Props) {
             onClick={() => {
               setModalOpen(true)
             }}>
-            <ExclamationCircleOutlined style={{ fontSize: '18px' }} />
+            <InfoCircleOutlined style={{ fontSize: '18px' }} />
           </span>
           {showMode && (
             <span
@@ -347,7 +348,7 @@ export function ScheduleSection(props: Props) {
         )}
         <div className='flex flex-col w-full mt-2'>
           {Object.entries(scheduleData).map(([day, value]) => (
-            <div className='flex w-full items-center justify-between'>
+            <div key={day} className='flex w-full items-center justify-between'>
               <span style={{ color: 'var(--tg-theme-text-color)' }}>
                 {daysOfWeekMap[day as keyof ScheduleData]}
               </span>

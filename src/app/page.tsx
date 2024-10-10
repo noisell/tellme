@@ -7,6 +7,7 @@ import { HeaderSection } from '@/app/components/headerSection'
 import { Categories, ExecutorResponseData, Level, PageState } from '@/app/types'
 import {
   authorization,
+  getAllDisputes,
   getCategories,
   getCloudStorageItem,
   getExecutorProject,
@@ -27,9 +28,11 @@ import {
   CaretRightOutlined,
   CheckCircleOutlined,
   ClockCircleOutlined,
+  CloudUploadOutlined,
   CommentOutlined,
   ExclamationCircleOutlined,
   InboxOutlined,
+  InfoCircleOutlined,
   LoadingOutlined,
   SolutionOutlined,
   WarningOutlined,
@@ -41,6 +44,7 @@ import Dragger from 'antd/es/upload/Dragger'
 import { div } from 'framer-motion/client'
 import { TextDispute } from './components/text-dispute'
 import { DisputeItem } from './components/dispute-item'
+import { DrawerDispute } from './components/drawerDispute'
 
 export default function Home() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
@@ -225,7 +229,28 @@ export default function Home() {
     }
   }
 
-  const [showAllText, setShowAllText] = useState(false)
+  const [openDrawerDispute, setOpenDrawerDispute] = useState(false)
+
+  const [disputeList, setDisputeList] = useState<
+    {
+      project_id: number
+      user_id: number
+      executor_id: number
+      message: string
+      video_url: string
+      admin_id: number | null
+      active: boolean
+      question: string
+      created_at: string
+      category: string
+    }[]
+  >([])
+
+  useEffect(() => {
+    getAllDisputes({ for_executor: true }).then(data => {
+      setDisputeList(data)
+    })
+  }, [])
 
   function executorPage(pageData: ExecutorResponseData) {
     setShowNavigation(true)
@@ -233,6 +258,10 @@ export default function Home() {
     const executor = pageData.executor
     return (
       <main className='flex w-full flex-col bg-tg-secondary-background-color items-center'>
+        <DrawerDispute
+          open={openDrawerDispute}
+          setOpen={setOpenDrawerDispute}
+        />
         <ConfigProvider
           theme={{
             components: {
@@ -292,43 +321,45 @@ export default function Home() {
           }
           incomeToday={executor.amount}
         />
-        <div className='flex flex-col w-full h-auto items-center'>
-          <div
-            className={`flex flex-col w-full h-auto mt-3 bg-tg-section-color rounded-3xl py-4 px-4 ${
-              window.Telegram.WebApp.colorScheme === 'light' &&
-              'shadow-md shadow-gray-400'
-            }`}>
-            <div className='flex flex-col w-full items-center justify-between mt-1 font-medium mb-3 px-1'>
-              <div className='flex items-center justify-between w-full'>
-                <div className='flex w-full items-center gap-2 text-tg-destructive-text-color'>
-                  <ExclamationCircleOutlined />
-                  <div>
-                    <button
-                      className={`text-tg-destructive-text-color text-[14px]`}
-                      style={{ width: '100%' }}>
-                      Активные споры
-                    </button>
+        {disputeList && (
+          <div className='flex flex-col w-full h-auto items-center'>
+            <div
+              className={`flex flex-col w-full h-auto mt-3 bg-tg-section-color rounded-3xl py-4 px-4 ${
+                window.Telegram.WebApp.colorScheme === 'light' &&
+                'shadow-md shadow-gray-400'
+              }`}>
+              <div className='flex flex-col w-full items-center justify-between mt-1 font-medium mb-3 px-1'>
+                <div className='flex items-center justify-between w-full'>
+                  <div className='flex w-full items-center gap-2 text-orange-500'>
+                    <ExclamationCircleOutlined />
+                    <div>
+                      <div className='font-medium' style={{ width: '100%' }}>
+                        Активные споры
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className='text-tg-subtitle-color cursor-pointer'
+                    onClick={() => setOpenDrawerDispute(true)}>
+                    <InfoCircleOutlined style={{ fontSize: '18px' }} />
                   </div>
                 </div>
-              </div>
-              <DisputeItem />
-              <div className='flex justify-between mt-4 w-full gap-3'>
-                <button
-                  className='bg-tg-section-second-color aspect-square text-tg-button-text-color rounded-xl py-2 px-4'
-                  onClick={prev} // функция для перехода на предыдущую страницу
-                >
-                  <ArrowLeftOutlined />
-                </button>
-                <button
-                  className='bg-tg-section-second-color aspect-square text-tg-button-text-color rounded-xl py-2 px-4'
-                  onClick={next} // функция для перехода на следующую страницу
-                >
-                  <ArrowRightOutlined />
-                </button>
+                {disputeList.map(item => {
+                  return (
+                    <DisputeItem
+                      key={item.project_id}
+                      project_id={item.project_id}
+                      created_at={item.created_at}
+                      category={item.category}
+                      admin_id={item.admin_id}
+                      question={item.question}
+                    />
+                  )
+                })}
               </div>
             </div>
           </div>
-        </div>
+        )}
         {activeOrder && (
           <>
             <div className='flex flex-col w-full h-auto items-center'>
@@ -408,13 +439,13 @@ export default function Home() {
                 {activeProjects.length > 1 && (
                   <div className='flex justify-between mt-4 w-full gap-3'>
                     <button
-                      className='bg-tg-section-second-color aspect-square text-tg-button-text-color rounded-xl py-2 px-4'
+                      className='bg-tg-section-second-color text-tg-button-text-color rounded-xl py-2 px-4'
                       onClick={prev} // функция для перехода на предыдущую страницу
                     >
                       <ArrowLeftOutlined />
                     </button>
                     <button
-                      className='bg-tg-section-second-color aspect-square text-tg-button-text-color rounded-xl py-2 px-4'
+                      className='bg-tg-section-second-color text-tg-button-text-color rounded-xl py-2 px-4'
                       onClick={next} // функция для перехода на следующую страницу
                     >
                       <ArrowRightOutlined />

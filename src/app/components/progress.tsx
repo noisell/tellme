@@ -260,9 +260,9 @@ export function TasksProgress(props: Props) {
 
     return (
       <div
-        className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium ${window.Telegram.WebApp.colorScheme === 'light' && 'shadow-md shadow-gray-400'}`}>
-        <div className='flex w-full items-center justify-between px-2'>
-          <div className='flex w-full items-center gap-2'>
+        className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4${window.Telegram.WebApp.colorScheme === 'light' && 'shadow-md shadow-gray-400'}`}>
+        <div className='flex w-full items-center justify-between p-4'>
+          <div className='flex w-full items-center gap-2 font-medium'>
             <OrderedListOutlined />
             <span>Все задания выполнены</span>
           </div>

@@ -221,3 +221,14 @@ main {
 .ant-upload.ant-upload-drag {
   border-color: 'red' !important;
 }
+.ant-upload-wrapper {
+  width: 100% !important;
+}
+
+.ant-upload.ant-upload-select {
+  width: 100% !important;
+}
+
+.ant-upload {
+  width: 100% !important;
+}

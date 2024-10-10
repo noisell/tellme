@@ -267,6 +267,24 @@ export async function getExecutorInfoById() {
   }
 }
 
+export async function getAllDisputes(params: { for_executor: boolean }) {
+  const instance = await axiosBase()
+  const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  try {
+    const response = await instance.get('project/dispute/all', { params })
+    return response.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return await HTTP401Exception(userId, getExecutorInfoById)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
 export async function updateSkills(skills: string[]) {
   const instance = await axiosBase()
   const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number

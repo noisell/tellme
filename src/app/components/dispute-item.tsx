@@ -1,15 +1,32 @@
-import React, { useState } from 'react'
-import { Upload, UploadFile } from 'antd'
-import Dragger from 'antd/es/upload/Dragger'
-import { TextDispute } from './text-dispute'
-import { ConfigProvider, Button } from 'antd'
-import { InboxOutlined } from '@ant-design/icons'
+import React, { useEffect, useState } from 'react'
+import { ConfigProvider, message, Spin, Upload, UploadFile } from 'antd'
+import {
+  CloudUploadOutlined,
+  ArrowLeftOutlined,
+  ArrowRightOutlined,
+  LoadingOutlined,
+} from '@ant-design/icons'
 import AWS from 'aws-sdk'
+import { TextDispute } from './text-dispute'
 
-export const DisputeItem: React.FC = () => {
+interface DisputeItemProps {
+  project_id: number
+  question: string
+  category: string
+  admin_id?: number | null
+  created_at: string
+}
+
+export const DisputeItem = ({
+  category,
+  project_id,
+  question,
+}: DisputeItemProps) => {
   const [fileList, setFileList] = useState<UploadFile[]>([])
+  const [isUploading, setIsUploading] = useState(false) // Добавляем состояние загрузки
+  const [messageApi, contextHolder] = message.useMessage()
 
-  // Configure the S3 client
+  // Конфигурация клиента S3
   const s3 = new AWS.S3({
     endpoint: 'https://s3.timeweb.cloud',
     accessKeyId: 'PKG54KTOL8XGWFIOOQGB',
@@ -18,87 +35,125 @@ export const DisputeItem: React.FC = () => {
     signatureVersion: 'v4',
   })
 
-  const handleFileChange = (info: { fileList: UploadFile[] }) => {
-    setFileList(info.fileList)
-    // Log fileList for debugging
-    console.log('Updated file list:', info.fileList)
-  }
+  const handleUpload = async (file: File) => {
+    setIsUploading(true) // Устанавливаем состояние загрузки
 
-  const handleUpload = async () => {
-    if (fileList.length === 0) {
-      console.error('Ошибка: Файл не загружен')
-      return
-    }
-
-    const file = fileList[0].originFileObj as File // Get the first file
-
-    // Set up the S3 upload parameters
+    // Настройка параметров для загрузки файла в S3
     const params = {
-      Bucket: '1d74bcbd-tellme24', // Your bucket name
-      Key: file.name, // Use the file name
-      Body: file, // The file to upload
-      ACL: 'public-read', // Set ACL if you want public access
-      ContentType: file.type, // Set the content type
+      Bucket: '1d74bcbd-tellme24', // Название вашего бакета
+      Key: file.name, // Имя файла
+      Body: file, // Сам файл
+      ACL: 'public-read', // Доступ к файлу
+      ContentType: file.type, // Тип файла
     }
 
     try {
-      // Upload the file to S3
+      // Загрузка файла в S3
       const response = await s3.upload(params).promise()
-      console.log('File uploaded successfully:', response.Location)
+      console.log('Файл успешно загружен:', response.Location)
+      setFileList([]) // Очищаем список файлов после успешной загрузки
+      messageApi.success('Файл успешно загружен')
     } catch (error) {
-      console.error('Upload failed:', error)
+      console.error('Ошибка загрузки файла:', error)
+      messageApi.error('Ошибка загрузки файла')
+    } finally {
+      setIsUploading(false) // Сбрасываем состояние загрузки
     }
   }
 
+  const handleFileChange = (info: {
+    file: UploadFile
+    fileList: UploadFile[]
+  }) => {
+    setFileList(info.fileList)
+  }
+
+  useEffect(() => {
+    if (fileList.length > 0) {
+      const file = fileList[0].originFileObj as File
+      if (file) {
+        handleUpload(file)
+      }
+    }
+  }, [fileList])
+
   return (
     <>
-      <div className='text-left w-full mt-3 text-[14px]'>
+      <ConfigProvider
+        theme={{
+          components: {
+            Message: {
+              contentBg: 'var(--tg-second-section-color)',
+              colorText: 'var(--tg-theme-text-color)',
+            },
+          },
+        }}>
+        {contextHolder}
+      </ConfigProvider>
+      <div className='text-left w-full font-normal mt-3 text-[14px] flex flex-col gap-1'>
         <div>
           Дата открытия спора:{' '}
           <span className='text-tg-subtitle-color'>20.02.2024 23:03</span>
         </div>
         <div>
-          Категория: <span className='text-tg-subtitle-color'>Говно</span>
+          Категория: <span className='text-tg-subtitle-color'>{category}</span>
         </div>
         <div>
           Вопрос, который решали на созвоне:{' '}
           <div className='inline-flex'>
-            <TextDispute text='Lorem ipsum, dolor sit amet consectetur adipisicing elit. A assumenda, blanditiis vero nostrum optio quas dolorem tenetur. Veritatis amet esse error numquam eum, provident consequatur exercitationem, adipisci, dolorem vitae natus. Lorem ipsum, dolor sit amet consectetur adipisicing elit. A assumenda, blanditiis vero nostrum optio quas dolorem tenetur. Veritatis amet esse error numquam eum, provident consequatur exercitationem, adipisci, dolorem vitae natus.' />
+            <TextDispute text={question} />
           </div>
         </div>
       </div>
-      <div className='flex gap-3 items-center justify-between mt-3'>
-        <ConfigProvider
-          theme={{
-            components: {
-              Upload: {
-                colorBorder: 'var(--tg-theme-subtitle-text-color)',
+
+      <div className='flex justify-between mt-4 w-full gap-3 text-tg-accent-color'>
+        <button className='bg-tg-section-second-color rounded-xl py-2 px-4'>
+          <ArrowLeftOutlined />
+        </button>
+        <div className='w-full flex'>
+          <ConfigProvider
+            theme={{
+              components: {
+                Upload: {
+                  // Вы можете добавить дополнительные стили для компонента здесь
+                },
               },
-            },
-          }}>
-          <Dragger
-            fileList={fileList}
-            onChange={handleFileChange}
-            beforeUpload={() => false} // Prevent automatic upload
-          >
-            <div className='flex items-center justify-between gap-3'>
-              <div className='text-tg-accent-color'>
-                <InboxOutlined style={{ fontSize: 60 }} />
-              </div>
-              <div className='text-tg-text-color text-left'>
-                <p className=''>Загрузите видеозапись вашего звонка</p>
-                <p className='text-tg-subtitle-color leading-[15px]'>
-                  Если вы не предоставите видеозапись звонка в течение 24 часов
-                  с момента открытия спора, то деньги автоматически вернуться
-                  заказчику
-                </p>
-              </div>
-            </div>
-          </Dragger>
-          <Button type='primary' onClick={handleUpload} className='mt-3'>
-            Отправить
-          </Button>
-        </ConfigProvider>
+            }}>
+            <Upload
+              fileList={fileList}
+              onChange={handleFileChange}
+              beforeUpload={() => false} // Отключаем автоматическую загрузку
+              maxCount={1} // Ограничиваем до одного файла
+              multiple={false} // Отключаем множественную загрузку
+              accept='video/*' // Принимаем только видеофайлы
+              showUploadList={false} // Скрываем отображение списка файлов
+            >
+              <button
+                className='w-full text-center text-[14px] bg-tg-button-color text-tg-button-text-color rounded-xl py-2 px-4 flex items-center justify-center gap-2'
+                disabled={isUploading} // Блокируем кнопку при загрузке
+              >
+                {isUploading ? (
+                  <>
+                    <Spin
+                      indicator={
+                        <LoadingOutlined spin style={{ color: 'white' }} />
+                      }
+                    />
+                    Идёт загрузка
+                  </>
+                ) : (
+                  <>
+                    <CloudUploadOutlined />
+                    Загрузить запись
+                  </>
+                )}
+              </button>
+            </Upload>
+          </ConfigProvider>
+        </div>
+        <button className='bg-tg-section-second-color rounded-xl py-2 px-4'>
+          <ArrowRightOutlined />
+        </button>
       </div>
     </>
   )
