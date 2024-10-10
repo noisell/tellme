@@ -7,11 +7,13 @@ import { HeaderSection } from '@/app/components/headerSection'
 import { Categories, ExecutorResponseData, Level, PageState } from '@/app/types'
 import {
   authorization,
+  cancelProject,
+  confirmProject,
+  getAllConfirmProjects,
   getAllDisputes,
   getCategories,
   getCloudStorageItem,
   getExecutorProject,
-  getHistoryProjectExecutor,
   getLevels,
   setCloudStorageItem,
   updateShortcutClicks,
@@ -27,24 +29,17 @@ import {
   ArrowRightOutlined,
   CaretRightOutlined,
   CheckCircleOutlined,
-  ClockCircleOutlined,
-  CloudUploadOutlined,
-  CommentOutlined,
   ExclamationCircleOutlined,
-  InboxOutlined,
   InfoCircleOutlined,
   LoadingOutlined,
   SolutionOutlined,
-  WarningOutlined,
 } from '@ant-design/icons'
 import { ConfigProvider, Modal, Spin } from 'antd'
 import User, { colorFind } from '@/app/components/user'
 import Link from 'next/link'
-import Dragger from 'antd/es/upload/Dragger'
-import { div } from 'framer-motion/client'
-import { TextDispute } from './components/text-dispute'
 import { DisputeItem } from './components/dispute-item'
 import { DrawerDispute } from './components/drawerDispute'
+import { TextDispute } from './components/text-dispute'
 
 export default function Home() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
@@ -69,6 +64,8 @@ export default function Home() {
         time: number
         question: string
         created_at: string
+        video_cal_url: string
+        category_name: string
         info: {
           project_id: number
           description: string
@@ -246,11 +243,134 @@ export default function Home() {
     }[]
   >([])
 
+  function formatToUserTimezone(dateString: string): string {
+    // Преобразуем строку в объект Date (UTC)
+    const date = new Date(dateString)
+
+    // Получаем смещение временной зоны пользователя в минутах
+    const timezoneOffsetMinutes = date.getTimezoneOffset()
+
+    // Применяем смещение к дате
+    const userDate = new Date(
+      date.getTime() - timezoneOffsetMinutes * 60 * 1000,
+    )
+
+    // Получаем компоненты даты с учётом локального времени пользователя
+    const day = String(userDate.getDate()).padStart(2, '0') // День с ведущим нулём
+    const month = String(userDate.getMonth() + 1).padStart(2, '0') // Месяцы начинаются с 0
+    const year = userDate.getFullYear()
+
+    // Получаем компоненты времени с учётом локального времени пользователя
+    const hours = String(userDate.getHours()).padStart(2, '0')
+    const minutes = String(userDate.getMinutes()).padStart(2, '0')
+
+    // Форматируем в строку "dd.mm.yyyy hh:mm"
+    return `${day}.${month}.${year} ${hours}:${minutes}`
+  }
+
+  console.log(categories)
+
   useEffect(() => {
     getAllDisputes({ for_executor: true }).then(data => {
       setDisputeList(data)
     })
   }, [])
+
+  function isTimePassed(targetTime: string): boolean {
+    // Разделяем строку на дату и время
+    const [datePart, timePart] = targetTime.split(' ')
+    const [day, month, year] = datePart.split('.').map(Number)
+    const [hours, minutes] = timePart.split(':').map(Number)
+
+    // Создаём объект даты на основе переданных значений
+    const targetDate = new Date(year, month - 1, day, hours, minutes)
+
+    // Получаем текущую дату
+    const currentDate = new Date()
+
+    // Возвращаем true, если целевая дата меньше или равна текущей дате (время наступило)
+    return targetDate <= currentDate
+  }
+
+  const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(0)
+  const [confirmProjects, setConfirmProjects] = useState<
+    {
+      project_id: number
+      client_confirm: boolean
+      executor_confirm: boolean
+      created_at: string
+      question: string
+      category_name: string
+    }[]
+  >([
+    // {
+    //   project_id: 1,
+    //   client_confirm: false,
+    //   executor_confirm: false,
+    //   created_at: 'dsa',
+    //   question:
+    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque ab hic amet accusamus, quaerat nihil sunt ut porro modi voluptate officiis deserunt, et magnam adipisci velit eius dicta laudantium fugit?',
+    //   category_name: 'dsadas',
+    // },
+    // {
+    //   project_id: 2,
+    //   client_confirm: false,
+    //   executor_confirm: false,
+    //   created_at: 'dsa',
+    //   question: '22222222222',
+    //   category_name: '22222222',
+    // },
+  ])
+
+  useEffect(() => {
+    getAllConfirmProjects({ for_executor: true }).then(data => {
+      setConfirmProjects(data)
+    })
+  }, [])
+
+  const handleClose = async (boolean: boolean) => {
+    console.log(111)
+
+    await confirmProject({
+      project_id: confirmProjects[currentModalIndex!].project_id,
+      value: boolean,
+      for_executor: true,
+    })
+    if (
+      currentModalIndex !== null &&
+      currentModalIndex < confirmProjects.length - 1
+    ) {
+      setCurrentModalIndex(currentModalIndex + 1) // Открыть следующую модалку
+    } else {
+      setCurrentModalIndex(null) // Закрыть все модалки, если это была последняя
+    }
+  }
+
+  const handleEndProject = () => {
+    if (activeOrder) {
+      setConfirmProjects([
+        {
+          category_name: '',
+          client_confirm: false,
+          created_at: '',
+          executor_confirm: false,
+          project_id: activeOrder?.id,
+          question: '',
+        },
+      ])
+      setCurrentModalIndex(0)
+    }
+  }
+
+  const handleCloseProject = (id: number) => {
+    cancelProject(id).then(() => {
+      getExecutorProject().then(data => {
+        setActiveProjects(data)
+      })
+    })
+  }
+
+  console.log(confirmProjects?.length, currentModalIndex)
 
   function executorPage(pageData: ExecutorResponseData) {
     setShowNavigation(true)
@@ -283,29 +403,54 @@ export default function Home() {
               },
             },
           }}>
-          <Modal
-            title='Решили ли вы вопрос?'
-            open={false}
-            style={{ background: 'var(--tg-theme-bg-color)' }}
-            closable={false}
-            maskClosable={false}
-            centered
-            footer={
-              <div className='flex gap-2 justify-between mt-5'>
-                <button className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
-                  Не решил
-                </button>
-                <button className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
-                  Всё супер!
-                </button>
-              </div>
-            }>
-            <p className='text-tg-subtitle-color'>
-              Такое же окно получит заказчик, если ваши ответы не совпадут, то
-              будет открыт спор
-            </p>
-          </Modal>
+          {confirmProjects?.length > 0 && currentModalIndex !== null && (
+            <Modal
+              title='Решили ли вы вопрос?'
+              open={true}
+              style={{ background: 'var(--tg-theme-bg-color)' }}
+              closable={false}
+              maskClosable={false}
+              centered
+              footer={
+                <div className='flex gap-2 justify-between mt-5'>
+                  <button
+                    onClick={() => handleClose(false)}
+                    className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                    Не решил
+                  </button>
+                  <button
+                    onClick={() => handleClose(true)}
+                    className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                    Всё супер!
+                  </button>
+                </div>
+              }>
+              {confirmProjects[currentModalIndex].category_name !== '' && (
+                <div>
+                  Категория:{' '}
+                  <span className='text-tg-subtitle-color'>
+                    {confirmProjects[currentModalIndex].category_name}
+                  </span>
+                </div>
+              )}
+              {confirmProjects[currentModalIndex].question !== '' && (
+                <div>
+                  Вопрос, который решали:{' '}
+                  <span className='text-tg-subtitle-color'>
+                    <TextDispute
+                      text={confirmProjects[currentModalIndex].question}
+                    />
+                  </span>
+                </div>
+              )}
+              <p className='text-tg-subtitle-color mt-2'>
+                Такое же окно получит заказчик, если ваши ответы не совпадут, то
+                будет открыт спор
+              </p>
+            </Modal>
+          )}
         </ConfigProvider>
+
         <HeaderSection
           levelID={executor.level.id}
           first_name={user.name}
@@ -382,11 +527,22 @@ export default function Home() {
                       {activeOrder.status === 'working' && 'Активный заказ'}
                     </div>
                     <div>
-                      <button
-                        className={`text-tg-destructive-text-color text-[14px]`}
-                        style={{ width: '100%' }}>
-                        Отменить
-                      </button>
+                      {activeOrder.status === 'waiting_start' && (
+                        <button
+                          className={`text-tg-destructive-text-color text-[14px]`}
+                          style={{ width: '100%' }}
+                          onClick={() => handleCloseProject(activeOrder.id)}>
+                          Отменить
+                        </button>
+                      )}
+                      {activeOrder.status !== 'waiting_start' && (
+                        <button
+                          className={`text-orange-500 text-[14px]`}
+                          style={{ width: '100%' }}
+                          onClick={() => handleEndProject()}>
+                          Завершить
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -414,11 +570,7 @@ export default function Home() {
                     </div>
                     <div className='text-center flex-grow flex-shrink-0'>
                       <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center'>
-                        {
-                          categories?.find(
-                            c => c.id === activeOrder.category_id,
-                          )?.name
-                        }
+                        {activeOrder.category_name}
                       </div>
                     </div>
                     <div className='text-center flex-grow flex-shrink-0'>
@@ -436,6 +588,41 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+                {activeOrder.info.start_time === null && (
+                  <button
+                    onClick={() => {
+                      window.open(activeOrder.video_cal_url, '_blank')
+                    }}
+                    className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 cursor-pointer`}
+                    style={{ width: '100%' }}>
+                    Подключиться к звонку
+                  </button>
+                )}
+                {activeOrder.info.start_time && (
+                  <button
+                    onClick={() => {
+                      window.open(activeOrder.video_cal_url, '_blank')
+                    }}
+                    disabled={
+                      !(
+                        activeOrder.info.start_time &&
+                        isTimePassed(
+                          formatToUserTimezone(activeOrder.info.start_time),
+                        )
+                      )
+                    }
+                    className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 ${!(activeOrder.info.start_time && isTimePassed(formatToUserTimezone(activeOrder.info.start_time))) ? 'opacity-55 cursor-not-allowed' : 'cursor-pointer'}`}
+                    style={{ width: '100%' }}>
+                    Подключиться к звонку
+                  </button>
+                )}
+
+                {activeOrder.info.start_time && (
+                  <div className='text-tg-subtitle-color text-center text-[12px] mt-1'>
+                    Звонок будет доступен в{' '}
+                    {formatToUserTimezone(activeOrder.info.start_time)}
+                  </div>
+                )}
                 {activeProjects.length > 1 && (
                   <div className='flex justify-between mt-4 w-full gap-3'>
                     <button

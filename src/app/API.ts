@@ -271,13 +271,53 @@ export async function getAllDisputes(params: { for_executor: boolean }) {
   const instance = await axiosBase()
   const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
   try {
-    const response = await instance.get('project/dispute/all', { params })
+    const response = await instance.get('/project/dispute/all', { params })
     return response.data
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       switch (error.status) {
         case 401:
-          return await HTTP401Exception(userId, getExecutorInfoById)
+          return await HTTP401Exception(userId, getAllDisputes)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
+export async function getAllConfirmProjects(params: { for_executor: boolean }) {
+  const instance = await axiosBase()
+  const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  try {
+    const response = await instance.get('/project/get/confirm/all', { params })
+    return response.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return await HTTP401Exception(userId, getAllConfirmProjects)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
+export async function confirmProject(data: {
+  project_id: number
+  for_executor: boolean
+  value: boolean
+}) {
+  const instance = await axiosBase()
+  const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  try {
+    const response = await instance.patch('/project/confirm', data)
+    return response.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return await HTTP401Exception(userId, confirmProject)
       }
     } else if (error instanceof Error) {
       console.error(error.message)

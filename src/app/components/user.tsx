@@ -32,6 +32,7 @@ import { Categories, Level, Price, TreeCategories } from '@/app/types'
 import {
   cancelProject,
   createProject,
+  getAllConfirmProjects,
   getCategories,
   getExecutorInfoById,
   getLevels,
@@ -44,6 +45,7 @@ import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
 import { Modal } from 'antd'
 import { main } from 'framer-motion/client'
+import dayjs from 'dayjs'
 
 const { TextArea } = Input
 
@@ -131,6 +133,7 @@ export default function User() {
     time: number
     question: string
     created_at: string
+    video_cal_url: string
     info: {
       project_id: number
       description: string
@@ -412,26 +415,18 @@ export default function User() {
         return
       }
 
-      // Извлечение строковых значений из объектов (если используете dayjs или moment)
-      const formattedDate = date.format('YYYY-MM-DD') // Пример для dayjs
-      const formattedStartTime = startTime.format('HH:mm') // Пример для dayjs
-      const formattedEndTime = endTime.format('HH:mm') // Пример для dayjs
+      // Формируем даты и время с использованием dayjs
+      const formattedDate = dayjs(date).format('YYYY-MM-DD')
+      const formattedStartTime = dayjs(startTime).format('HH:mm')
+      const formattedEndTime = dayjs(endTime).format('HH:mm')
 
       // Форматируем строки для Date
       const startDateTimeString = `${formattedDate}T${formattedStartTime}:00` // Добавляем секунды
       const endDateTimeString = `${formattedDate}T${formattedEndTime}:00` // Добавляем секунды
 
-      // Проверка значений
-      console.log('Start DateTime String:', startDateTimeString) // Должен быть корректным
-      console.log('End DateTime String:', endDateTimeString) // Должен быть корректным
-
       // Преобразуем в объекты Date
       const startDateTime = new Date(startDateTimeString)
       const endDateTime = new Date(endDateTimeString)
-
-      // Проверка на Invalid Date
-      console.log('Start DateTime:', startDateTime)
-      console.log('End DateTime:', endDateTime)
 
       // Проверка на заднюю дату и время
       const currentDateTime = new Date() // Текущее время
@@ -462,6 +457,39 @@ export default function User() {
       }
     }
 
+    let start_time = new Date()
+    let end_time = new Date()
+
+    if (!fast) {
+      const [day, month, year] = dateString.split('.')
+      const formattedDateString = `${year}-${month}-${day}` // Now in YYYY-MM-DD format
+
+      const startDateTimeString = `${formattedDateString}T${startTimeString}` // Combine date and start time
+      let start_time = new Date(startDateTimeString) // Create Date object
+
+      const endDateTimeString = `${formattedDateString}T${endTimeString}` // Combine date and end time
+      let end_time = new Date(endDateTimeString) // Create Date object
+
+      const timezoneOffset = start_time.getTimezoneOffset() * 60 * 1000
+
+      start_time = new Date(start_time.getTime() + timezoneOffset)
+
+      end_time = new Date(end_time.getTime() + timezoneOffset)
+    }
+
+    // Function to format date as "DD.MM.YYYYTHH:mm"
+    function formatDateTime(date: Date) {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0') // Months are zero-indexed
+      const day = String(date.getDate()).padStart(2, '0')
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      const seconds = String(date.getSeconds()).padStart(2, '0')
+      const milliseconds = String(date.getMilliseconds()).padStart(3, '0')
+
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`
+    }
+
     const data = {
       category_id: value,
       level_id: level === 5 ? 1 : level,
@@ -469,12 +497,12 @@ export default function User() {
       question: question,
       interval: !fast
         ? {
-            time_start: `${dateString}T${startTimeString}`,
-            time_end: `${dateString}T${endTimeString}`,
+            time_start: formatDateTime(start_time),
+            time_end: formatDateTime(end_time),
           }
         : null,
       executor_id: executorId ? +executorId : null,
-      price: level === 0 ? 0 : price,
+      price: level === 5 ? 0 : price,
     }
     setLoadingSearch(true)
     createProject(data).then(r => {
@@ -572,6 +600,90 @@ export default function User() {
     'Плохое качество связи',
   ]
 
+  const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(0)
+  const [confirmProjects, setConfirmProjects] = useState<
+    {
+      client_confirm: boolean
+      executor_confirm: boolean
+      created_at: string
+      question: string
+      category_name: string
+    }[]
+  >([
+    {
+      client_confirm: false,
+      executor_confirm: false,
+      created_at: 'dsa',
+      question: 'dsadas',
+      category_name: 'dsadas',
+    },
+    {
+      client_confirm: false,
+      executor_confirm: false,
+      created_at: 'dsa',
+      question: '22222222222',
+      category_name: '22222222',
+    },
+  ])
+
+  useEffect(() => {
+    getAllConfirmProjects({ for_executor: false }).then(data => {
+      // setConfirmProjects(data)
+    })
+  }, [])
+
+  const handleClose = () => {
+    if (
+      currentModalIndex !== null &&
+      currentModalIndex < confirmProjects.length - 1
+    ) {
+      setCurrentModalIndex(currentModalIndex + 1) // Открыть следующую модалку
+    } else {
+      setCurrentModalIndex(null) // Закрыть все модалки, если это была последняя
+    }
+  }
+
+  function formatToUserTimezone(dateString: string): string {
+    // Преобразуем строку в объект Date (UTC)
+    const date = new Date(dateString)
+
+    // Получаем смещение временной зоны пользователя в минутах
+    const timezoneOffsetMinutes = date.getTimezoneOffset()
+
+    // Применяем смещение к дате
+    const userDate = new Date(
+      date.getTime() - timezoneOffsetMinutes * 60 * 1000,
+    )
+
+    // Получаем компоненты даты с учётом локального времени пользователя
+    const day = String(userDate.getDate()).padStart(2, '0') // День с ведущим нулём
+    const month = String(userDate.getMonth() + 1).padStart(2, '0') // Месяцы начинаются с 0
+    const year = userDate.getFullYear()
+
+    // Получаем компоненты времени с учётом локального времени пользователя
+    const hours = String(userDate.getHours()).padStart(2, '0')
+    const minutes = String(userDate.getMinutes()).padStart(2, '0')
+
+    // Форматируем в строку "dd.mm.yyyy hh:mm"
+    return `${day}.${month}.${year} ${hours}:${minutes}`
+  }
+
+  function isTimePassed(targetTime: string): boolean {
+    // Разделяем строку на дату и время
+    const [datePart, timePart] = targetTime.split(' ')
+    const [day, month, year] = datePart.split('.').map(Number)
+    const [hours, minutes] = timePart.split(':').map(Number)
+
+    // Создаём объект даты на основе переданных значений
+    const targetDate = new Date(year, month - 1, day, hours, minutes)
+
+    // Получаем текущую дату
+    const currentDate = new Date()
+
+    // Возвращаем true, если целевая дата меньше или равна текущей дате (время наступило)
+    return targetDate <= currentDate
+  }
+
   return (
     <main className='flex w-full flex-col bg-tg-secondary-background-color items-center'>
       <ConfigProvider
@@ -638,28 +750,46 @@ export default function User() {
             placeholder='Опишите проблему'
           />
         </Modal> */}
-        {/* <Modal
-          title='Эксперт решил ваш вопрос?'
-          open={true}
-          style={{ background: 'var(--tg-theme-bg-color)' }}
-          closable={false}
-          maskClosable={false}
-          centered
-          footer={
-            <div className='flex gap-2 justify-between mt-5'>
-              <button className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
-                Не решил
-              </button>
-              <button className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
-                Всё супер!
-              </button>
+        {confirmProjects?.length > 0 && currentModalIndex !== null && (
+          <Modal
+            title='Эксперт решил ваш вопрос?'
+            open={true}
+            style={{ background: 'var(--tg-theme-bg-color)' }}
+            closable={false}
+            maskClosable={false}
+            centered
+            footer={
+              <div className='flex gap-2 justify-between mt-5'>
+                <button
+                  onClick={handleClose}
+                  className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                  Не решил
+                </button>
+                <button
+                  onClick={handleClose}
+                  className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                  Всё супер!
+                </button>
+              </div>
+            }>
+            <div>
+              Категория:{' '}
+              <span className='text-tg-subtitle-color'>
+                {confirmProjects[currentModalIndex].category_name}
+              </span>
             </div>
-          }>
-          <p className='text-tg-subtitle-color'>
-            Такое же окно получит эксперт, если ваши ответы не совпадут, то
-            будет открыт спор
-          </p>
-        </Modal> */}
+            <div>
+              Вопрос, который решали:{' '}
+              <span className='text-tg-subtitle-color'>
+                {confirmProjects[currentModalIndex].question}
+              </span>
+            </div>
+            <p className='text-tg-subtitle-color'>
+              Такое же окно получит эксперт, если ваши ответы не совпадут, то
+              будет открыт спор
+            </p>
+          </Modal>
+        )}
       </ConfigProvider>
       <ConfigProvider
         theme={{
@@ -823,12 +953,34 @@ export default function User() {
                 </div>
               </div>
             </div>
-
-            {/* <button
-            className={`p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 ${true ? 'opacity-55 cursor-not-allowed' : 'cursor-pointer'}`}
-            style={{ width: '100%' }}>
-            Начать звонок
-          </button> */}
+            {activeOrder.info.start_time === null && (
+              <button
+                onClick={() => {
+                  window.open(activeOrder.video_cal_url, '_blank')
+                }}
+                className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 cursor-pointer`}
+                style={{ width: '100%' }}>
+                Подключиться к звонку
+              </button>
+            )}
+            {activeOrder.info.start_time && (
+              <button
+                onClick={() => {
+                  window.open(activeOrder.video_cal_url, '_blank')
+                }}
+                disabled={
+                  !(
+                    activeOrder.info.start_time &&
+                    isTimePassed(
+                      formatToUserTimezone(activeOrder.info.start_time),
+                    )
+                  )
+                }
+                className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 ${!(activeOrder.info.start_time && isTimePassed(formatToUserTimezone(activeOrder.info.start_time))) ? 'opacity-55 cursor-not-allowed' : 'cursor-pointer'}`}
+                style={{ width: '100%' }}>
+                Подключиться к звонку
+              </button>
+            )}
           </div>
         )}
 
