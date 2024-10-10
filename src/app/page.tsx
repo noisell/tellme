@@ -40,6 +40,7 @@ import Link from 'next/link'
 import { DisputeItem } from './components/dispute-item'
 import { DrawerDispute } from './components/drawerDispute'
 import { TextDispute } from './components/text-dispute'
+import { span } from 'framer-motion/client'
 
 export default function Home() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
@@ -328,13 +329,24 @@ export default function Home() {
     })
   }, [])
 
-  const handleClose = async (boolean: boolean) => {
-    console.log(111)
+  const [loadingNone, setLoadingNone] = useState<boolean>(false)
+  const [loadingYes, setLoadingYes] = useState<boolean>(false)
+  const [loadingCancel, setLoadingCancel] = useState<boolean>(false)
+
+  const handleClose = async (string: 'yes' | 'none', boolean: boolean) => {
+    if (string === 'yes') {
+      setLoadingYes(true)
+    } else {
+      setLoadingNone(true)
+    }
 
     await confirmProject({
       project_id: confirmProjects[currentModalIndex!].project_id,
       value: boolean,
       for_executor: true,
+    }).then(() => {
+      setLoadingNone(false)
+      setLoadingYes(false)
     })
     if (
       currentModalIndex !== null &&
@@ -366,11 +378,14 @@ export default function Home() {
     cancelProject(id).then(() => {
       getExecutorProject().then(data => {
         setActiveProjects(data)
+        setLoadingCancel(false)
       })
     })
   }
 
   console.log(confirmProjects?.length, currentModalIndex)
+
+  const [showCancelModal, setShowCancelModal] = useState(false)
 
   function executorPage(pageData: ExecutorResponseData) {
     setShowNavigation(true)
@@ -414,13 +429,29 @@ export default function Home() {
               footer={
                 <div className='flex gap-2 justify-between mt-5'>
                   <button
-                    onClick={() => handleClose(false)}
-                    className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                    onClick={() => handleClose('none', false)}
+                    disabled={loadingNone}
+                    className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl flex items-center justify-center gap-2'>
+                    {loadingNone && (
+                      <Spin
+                        indicator={
+                          <LoadingOutlined spin style={{ color: 'white' }} />
+                        }
+                      />
+                    )}
                     Не решил
                   </button>
                   <button
-                    onClick={() => handleClose(true)}
-                    className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                    onClick={() => handleClose('yes', true)}
+                    disabled={loadingYes}
+                    className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl flex items-center justify-center gap-2'>
+                    {loadingYes && (
+                      <Spin
+                        indicator={
+                          <LoadingOutlined spin style={{ color: 'white' }} />
+                        }
+                      />
+                    )}
                     Всё супер!
                   </button>
                 </div>
@@ -449,6 +480,42 @@ export default function Home() {
               </p>
             </Modal>
           )}
+          <Modal
+            title='Вы уверены, что хотите отменить заказ?'
+            open={showCancelModal}
+            onClose={() => setShowCancelModal(false)}
+            style={{ background: 'var(--tg-theme-bg-color)' }}
+            centered
+            closable={false}
+            maskClosable={false}
+            footer={
+              <div className='flex gap-2 justify-between mt-5'>
+                <button
+                  onClick={() => setShowCancelModal(false)}
+                  className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                  Нет
+                </button>
+                <button
+                  onClick={() => {
+                    if (activeOrder?.id) {
+                      setLoadingCancel(true)
+                      handleCloseProject(activeOrder?.id)
+                    }
+                    setShowCancelModal(false)
+                  }}
+                  disabled={loadingCancel}
+                  className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                  {loadingCancel && (
+                    <Spin
+                      indicator={
+                        <LoadingOutlined spin style={{ color: 'white' }} />
+                      }
+                    />
+                  )}
+                  Да!
+                </button>
+              </div>
+            }></Modal>
         </ConfigProvider>
 
         <HeaderSection
@@ -505,6 +572,10 @@ export default function Home() {
             </div>
           </div>
         )}
+        <OrdersAcceptSection
+          webApp={webApp as IWebApp}
+          acceptOrders={executor.accept_orders}
+        />
         {activeOrder && (
           <>
             <div className='flex flex-col w-full h-auto items-center'>
@@ -527,15 +598,15 @@ export default function Home() {
                       {activeOrder.status === 'working' && 'Активный заказ'}
                     </div>
                     <div>
-                      {activeOrder.status === 'waiting_start' && (
+                      {activeOrder.status === 'search_executor' && (
                         <button
                           className={`text-tg-destructive-text-color text-[14px]`}
                           style={{ width: '100%' }}
-                          onClick={() => handleCloseProject(activeOrder.id)}>
+                          onClick={() => setShowCancelModal(true)}>
                           Отменить
                         </button>
                       )}
-                      {activeOrder.status !== 'waiting_start' && (
+                      {activeOrder.status !== 'search_executor' && (
                         <button
                           className={`text-orange-500 text-[14px]`}
                           style={{ width: '100%' }}
@@ -643,10 +714,6 @@ export default function Home() {
             </div>
           </>
         )}
-        <OrdersAcceptSection
-          webApp={webApp as IWebApp}
-          acceptOrders={executor.accept_orders}
-        />
         {executor.level.id === 1 ? (
           <TasksProgress user_id={executor.user_id} />
         ) : null}

@@ -131,6 +131,7 @@ export const Skills = () => {
               backgroundColor: 'var(--tg-theme-bg-color)',
               borderColor: 'var(--tg-theme-hint-color)',
               color: 'var(--tg-theme-text-color)',
+              fontWeight: '400',
             }}
             placeholder='Введите навык...'
             value={inputValue}

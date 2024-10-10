@@ -4,6 +4,7 @@ import { BarChartOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons'
 import { ConfigProvider, Badge } from 'antd'
 import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
+import Link from 'next/link'
 
 export function Nav() {
   const router = useRouter()
@@ -33,10 +34,11 @@ export function Nav() {
           },
         }}>
         <Badge count={0}>
-          <button
+          <Link
+            href={'/'}
             onClick={() => {
               window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
-              handleClick('/')
+              setActiveButton('/')
             }}
             style={{
               background: 'none',
@@ -52,13 +54,14 @@ export function Nav() {
             <p style={{ fontSize: '11px', color: `${activeColor('/')}` }}>
               Главная
             </p>
-          </button>
+          </Link>
         </Badge>
         <Badge count={0}>
-          <button
+          <Link
+            href={'/statistics'}
             onClick={() => {
               window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
-              handleClick('/statistics')
+              setActiveButton('/statistics')
             }}
             style={{
               background: 'none',
@@ -81,13 +84,14 @@ export function Nav() {
               }}>
               Статистика
             </p>
-          </button>
+          </Link>
         </Badge>
         <Badge count={0}>
-          <button
+          <Link
+            href={'/profile'}
             onClick={() => {
               window.Telegram.WebApp.HapticFeedback.impactOccurred('medium')
-              handleClick('/profile')
+              setActiveButton('/profile')
             }}
             style={{
               background: 'none',
@@ -104,7 +108,7 @@ export function Nav() {
               style={{ fontSize: '11px', color: `${activeColor('/profile')}` }}>
               Профиль
             </p>
-          </button>
+          </Link>
         </Badge>
       </ConfigProvider>
     </nav>

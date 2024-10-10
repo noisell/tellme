@@ -5,6 +5,7 @@ import {
   OrderedListOutlined,
   ExclamationCircleOutlined,
   CloseOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons'
 import { Progress, ConfigProvider, Skeleton, message } from 'antd'
 import { UserTasksCompleted } from '@/app/types'
@@ -261,7 +262,7 @@ export function TasksProgress(props: Props) {
     return (
       <div
         className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4${window.Telegram.WebApp.colorScheme === 'light' && 'shadow-md shadow-gray-400'}`}>
-        <div className='flex w-full items-center justify-between p-4'>
+        <div className='flex w-full items-center justify-between py-4 px-5'>
           <div className='flex w-full items-center gap-2 font-medium'>
             <OrderedListOutlined />
             <span>Все задания выполнены</span>
@@ -269,7 +270,7 @@ export function TasksProgress(props: Props) {
 
           <CloseOutlined onClick={() => handleClose()} />
         </div>
-        <div className='flex justify-between items-center px-4 rounded-xl w-full'>
+        <div className='flex justify-between items-center px-4 rounded-xl w-full pb-4'>
           <Image
             src='/party-confetti.gif'
             width={150}
@@ -298,7 +299,7 @@ export function TasksProgress(props: Props) {
           <OrderedListOutlined />
           <span>Задания</span>
         </div>
-        <ExclamationCircleOutlined
+        <InfoCircleOutlined
           style={{
             fontSize: '18px',
             color: 'var(--tg-theme-subtitle-text-color)',

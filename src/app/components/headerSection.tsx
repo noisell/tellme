@@ -68,9 +68,6 @@ export function HeaderSection(props: Props) {
             strokeColor='var(--tg-theme-accent-text-color)'
           />
         </div>
-        <div className='flex gap-2 font-medium text-tg-text-color'>
-          <SettingOutlined style={{ fontSize: '23px' }} />
-        </div>
       </div>
       <div className='flex flex-col mt-6 items-center'>
         <span className='text-tg-subtitle-color'>Сегодня</span>

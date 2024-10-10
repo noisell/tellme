@@ -23,6 +23,7 @@ import {
   UserOutlined,
   UserSwitchOutlined,
   LoadingOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons'
 import { TasksProgress } from '@/app/components/progress'
 import Link from 'next/link'
@@ -31,11 +32,13 @@ import TelegramIcon from '@mui/icons-material/Telegram'
 import { Categories, Level, Price, TreeCategories } from '@/app/types'
 import {
   cancelProject,
+  confirmProject,
   createProject,
   getAllConfirmProjects,
   getCategories,
   getExecutorInfoById,
   getLevels,
+  getNameExecutorProject,
   getTaskInfo,
   getUserFree,
   getUserProject,
@@ -44,8 +47,8 @@ import {
 import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
 import { Modal } from 'antd'
-import { data, main } from 'framer-motion/client'
 import dayjs from 'dayjs'
+import Image from 'next/image'
 
 const { TextArea } = Input
 
@@ -246,7 +249,6 @@ export default function User() {
       categories as Categories[],
       newValue,
     ) as Categories
-    console.log('level', level)
 
     setPrice(category.price[levelFind[level]] * time)
 
@@ -376,6 +378,23 @@ export default function User() {
     setActiveOrder(res)
     setSeconds(res?.seconds || 0)
   }
+
+  const [nameExecutor, setNameExecutor] = useState('')
+
+  useEffect(() => {
+    if (activeOrder && activeOrder.executor_id) {
+      getNameExecutorProject({
+        for_executor: false,
+        project_id: activeOrder.id,
+      }).then(r => {
+        if (r) {
+          setNameExecutor(r)
+        }
+      })
+    } else {
+      setNameExecutor('')
+    }
+  }, [activeOrder])
 
   const [loadingSearch, setLoadingSearch] = useState(false)
   const onSubmit = () => {
@@ -547,7 +566,7 @@ export default function User() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setSeconds(prevTime => prevTime + 1)
-    }, 1000)
+    }, 3000)
 
     return () => {
       if (intervalId) {
@@ -560,11 +579,14 @@ export default function User() {
     fetchProject()
   }, [])
 
+  const [loadingCancel, setLoadingCancel] = useState(false)
+
   const handleCancelProject = () => {
     if (!activeOrder) return
     cancelProject(activeOrder?.id).then(() => {
       setActiveOrder(null)
       setSeconds(0)
+      setLoadingCancel(false)
     })
   }
 
@@ -601,7 +623,6 @@ export default function User() {
     // @ts-ignore
     return result
   }
-  console.log(categories)
   const [categoriesData, setCategoriesData] = useState<string[]>([])
   const category = [
     'Эксперт не подключился',
@@ -613,6 +634,7 @@ export default function User() {
   const [currentModalIndex, setCurrentModalIndex] = useState<number | null>(0)
   const [confirmProjects, setConfirmProjects] = useState<
     {
+      project_id: number
       client_confirm: boolean
       executor_confirm: boolean
       created_at: string
@@ -627,7 +649,27 @@ export default function User() {
     })
   }, [])
 
-  const handleClose = () => {
+  const [loadingNone, setLoadingNone] = useState<boolean>(false)
+  const [loadingYes, setLoadingYes] = useState<boolean>(false)
+
+  const handleClose = (string: 'yes' | 'none', boolean: boolean) => {
+    if (string === 'yes') {
+      setLoadingYes(true)
+    } else {
+      setLoadingNone(true)
+    }
+
+    if (currentModalIndex !== null && confirmProjects[currentModalIndex]) {
+      confirmProject({
+        for_executor: false,
+        project_id: confirmProjects[currentModalIndex].project_id,
+        value: boolean,
+      }).then(() => {
+        setLoadingNone(false)
+        setLoadingYes(false)
+      })
+    }
+
     if (
       currentModalIndex !== null &&
       currentModalIndex < confirmProjects.length - 1
@@ -635,6 +677,22 @@ export default function User() {
       setCurrentModalIndex(currentModalIndex + 1) // Открыть следующую модалку
     } else {
       setCurrentModalIndex(null) // Закрыть все модалки, если это была последняя
+    }
+  }
+
+  const handleEndProject = () => {
+    if (activeOrder) {
+      setConfirmProjects([
+        {
+          category_name: '',
+          client_confirm: false,
+          created_at: '',
+          executor_confirm: false,
+          project_id: activeOrder?.id,
+          question: '',
+        },
+      ])
+      setCurrentModalIndex(0)
     }
   }
 
@@ -679,6 +737,8 @@ export default function User() {
     return targetDate <= currentDate
   }
 
+  const [showCancelModal, setShowCancelModal] = useState(false)
+
   return (
     <main className='flex w-full flex-col bg-tg-secondary-background-color items-center'>
       <ConfigProvider
@@ -702,6 +762,41 @@ export default function User() {
             },
           },
         }}>
+        <Modal
+          title='Вы уверены, что хотите отменить заказ?'
+          open={showCancelModal}
+          onClose={() => setShowCancelModal(false)}
+          style={{ background: 'var(--tg-theme-bg-color)' }}
+          centered
+          closable={false}
+          maskClosable={false}
+          footer={
+            <div className='flex gap-2 justify-between mt-5'>
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                Нет
+              </button>
+              <button
+                onClick={() => {
+                  if (activeOrder?.id) {
+                    handleCancelProject()
+                  }
+                  setShowCancelModal(false)
+                }}
+                disabled={loadingCancel}
+                className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                {loadingCancel && (
+                  <Spin
+                    indicator={
+                      <LoadingOutlined spin style={{ color: 'white' }} />
+                    }
+                  />
+                )}
+                Да!
+              </button>
+            </div>
+          }></Modal>
         {/* <Modal
           title='Опишите вашу проблему'
           open={true}
@@ -756,13 +851,29 @@ export default function User() {
             footer={
               <div className='flex gap-2 justify-between mt-5'>
                 <button
-                  onClick={handleClose}
-                  className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                  onClick={() => handleClose('none', false)}
+                  disabled={loadingNone}
+                  className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl flex items-center gap-2 justify-center'>
+                  {loadingNone && (
+                    <Spin
+                      indicator={
+                        <LoadingOutlined spin style={{ color: 'white' }} />
+                      }
+                    />
+                  )}
                   Не решил
                 </button>
                 <button
-                  onClick={handleClose}
-                  className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                  disabled={loadingYes}
+                  onClick={() => handleClose('yes', true)}
+                  className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl flex items-center gap-2 justify-center'>
+                  {loadingYes && (
+                    <Spin
+                      indicator={
+                        <LoadingOutlined spin style={{ color: 'white' }} />
+                      }
+                    />
+                  )}
                   Всё супер!
                 </button>
               </div>
@@ -882,17 +993,29 @@ export default function User() {
                   {activeOrder.status === 'working' && 'Активный заказ'}
                 </div>
                 <div>
-                  <button
-                    onClick={handleCancelProject}
-                    className={`text-tg-destructive-text-color text-[14px]`}
-                    style={{ width: '100%' }}>
-                    Отменить
-                  </button>
+                  {activeOrder.status === 'search_executor' && (
+                    <button
+                      className={`text-tg-destructive-text-color text-[14px]`}
+                      style={{ width: '100%' }}
+                      onClick={() => setShowCancelModal(true)}>
+                      Отменить
+                    </button>
+                  )}
+                  {activeOrder.status !== 'search_executor' && (
+                    <button
+                      className={`text-orange-500 text-[14px]`}
+                      style={{ width: '100%' }}
+                      onClick={() => handleEndProject()}>
+                      Завершить
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
             <div className='flex gap-3 items-center'>
-              <img
+              <Image
+                width={150}
+                height={150}
                 src='/compass.gif'
                 alt=''
                 className='size-[150px] flex-shrink-0'
@@ -901,7 +1024,11 @@ export default function User() {
                 <div className='flex items-center gap-2'>
                   <div className='text-center flex-grow flex-shrink-0'>
                     <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center'>
-                      {activeOrder.price.price} ₽
+                      {nameExecutor === '' ? (
+                        <>{activeOrder.price.price} ₽</>
+                      ) : (
+                        <>№ {activeOrder.id}</>
+                      )}
                     </div>
                   </div>
                   <div className='text-center flex-grow flex-shrink-0'>
@@ -936,18 +1063,30 @@ export default function User() {
                 </div>
               </div>
             </div>
-            <div className='space-x-2 text-[12px] flex items-center justify-between'>
-              <div className='text-center flex-grow'>
-                <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center text-tg-accent-color'>
-                  {text}
+            {nameExecutor === '' && (
+              <div className='space-x-2 text-[12px] flex items-center justify-between'>
+                <div className='text-center flex-grow'>
+                  <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center text-tg-accent-color'>
+                    {text}
+                  </div>
+                </div>
+                <div className='text-center flex-grow flex-shrink-0 max-w-[80px]'>
+                  <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center text-tg-accent-color'>
+                    {formatTime(seconds)}
+                  </div>
                 </div>
               </div>
-              <div className='text-center flex-grow flex-shrink-0 max-w-[80px]'>
-                <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center text-tg-accent-color'>
-                  {formatTime(seconds)}
+            )}
+            {nameExecutor !== '' && (
+              <div className='flex items-center justify-between gap-2 text-[12px]'>
+                <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center'>
+                  {nameExecutor}
+                </div>
+                <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center'>
+                  {activeOrder.price.price} ₽
                 </div>
               </div>
-            </div>
+            )}
             {activeOrder.info.start_time === null && (
               <button
                 onClick={() => {
@@ -991,7 +1130,7 @@ export default function User() {
                   <ShoppingOutlined />
                   <span>Получить совет</span>
                 </div>
-                <ExclamationCircleOutlined
+                <InfoCircleOutlined
                   style={{
                     fontSize: '18px',
                     color: 'var(--tg-theme-subtitle-text-color)',
@@ -1046,12 +1185,11 @@ export default function User() {
                     onChange={onChange}
                     treeData={tree.map(node => ({
                       ...node,
-                      disabled: node.children && node.children.length > 0, // Если есть дети, узел отключен
+                      disabled: true, // Верхний уровень отключен для выбора
                       children: node.children
                         ? node.children.map(child => ({
                             ...child,
-                            disabled:
-                              child.children && child.children.length > 0, // Рекурсивно проверяем детей
+                            disabled: false, // Дочерние элементы активны и могут быть выбраны
                           }))
                         : [],
                     }))} // Используем модифицированные данные

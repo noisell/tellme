@@ -68,7 +68,7 @@ export const UserName = () => {
         {contextHolder}
       </ConfigProvider>
       <div className='flex flex-col items-center w-full'>
-        <div className='flex w-full font-bold items-center justify-start gap-2 mb-2'>
+        <div className='flex w-full font-medium items-center justify-start gap-2 mb-2'>
           <UserOutlined />
           <span>Имя</span>
         </div>
@@ -89,6 +89,7 @@ export const UserName = () => {
               backgroundColor: 'var(--tg-theme-bg-color)',
               borderColor: 'var(--tg-theme-hint-color)',
               color: 'var(--tg-theme-text-color)',
+              fontWeight: '400',
             }}
             placeholder='Ваше имя'
             value={firstname}

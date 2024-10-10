@@ -484,6 +484,27 @@ export async function getUserProject() {
   }
 }
 
+export async function getNameExecutorProject(params: {
+  for_executor: boolean
+  project_id: number
+}) {
+  const instance = await axiosBase()
+  try {
+    return (await instance.get('/project/name/user', { params })).data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if (error.status === 401) {
+        return await HTTP401Exception(
+          window.Telegram.WebApp.initDataUnsafe.user?.id as number,
+          getNameExecutorProject,
+        )
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
 export async function getExecutorProject() {
   const instance = await axiosBase()
   try {

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { HistoryItem } from './components/HistoryItem'
 import { getHistoryProject } from '../API'
 import { useRouter } from 'next/navigation'
+import { LoadingComponent } from '../components/loadingComponent'
 
 interface ICustomType {
   id: number
@@ -47,8 +48,7 @@ export default function HistoryPage() {
     }
   }, [])
 
-  if (loading)
-    return <div className='w-full min-h-screen bg-tg-section-color'></div>
+  if (loading) return <LoadingComponent />
 
   return (
     <div className='w-full min-h-screen bg-tg-section-color'>
