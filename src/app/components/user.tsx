@@ -44,7 +44,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
 import { Modal } from 'antd'
-import { main } from 'framer-motion/client'
+import { data, main } from 'framer-motion/client'
 import dayjs from 'dayjs'
 
 const { TextArea } = Input
@@ -457,37 +457,45 @@ export default function User() {
       }
     }
 
-    let start_time = new Date()
-    let end_time = new Date()
+    const dateObj = dayjs(date) // создаем объект Day.js с датой
+    const startTimeObj = dayjs(startTime, 'HH:mm') // создаем объект Day.js с началом времени
+    const endTimeObj = dayjs(endTime, 'HH:mm') // создаем объект Day.js с концом времени
 
-    if (!fast) {
-      const [day, month, year] = dateString.split('.')
-      const formattedDateString = `${year}-${month}-${day}` // Now in YYYY-MM-DD format
+    // объединяем дату и время
+    const startDate = new Date(
+      dateObj.year(),
+      dateObj.month(),
+      dateObj.date(),
+      startTimeObj.hour(),
+      startTimeObj.minute(),
+    )
+    const endDate = new Date(
+      dateObj.year(),
+      dateObj.month(),
+      dateObj.date(),
+      endTimeObj.hour(),
+      endTimeObj.minute(),
+    )
 
-      const startDateTimeString = `${formattedDateString}T${startTimeString}` // Combine date and start time
-      let start_time = new Date(startDateTimeString) // Create Date object
-
-      const endDateTimeString = `${formattedDateString}T${endTimeString}` // Combine date and end time
-      let end_time = new Date(endDateTimeString) // Create Date object
-
-      const timezoneOffset = start_time.getTimezoneOffset() * 60 * 1000
-
-      start_time = new Date(start_time.getTime() + timezoneOffset)
-
-      end_time = new Date(end_time.getTime() + timezoneOffset)
+    const formatToUTC = (date: Date) => {
+      // Convert startDate to UTC
+      const utcStartDate = new Date(
+        date.getTime() + date.getTimezoneOffset() * 60 * 1000,
+      )
+      // Format the UTC date without timezone information
+      return utcStartDate
     }
 
-    // Function to format date as "DD.MM.YYYYTHH:mm"
-    function formatDateTime(date: Date) {
+    const formatDate = (date: Date) => {
       const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0') // Months are zero-indexed
-      const day = String(date.getDate()).padStart(2, '0')
-      const hours = String(date.getHours()).padStart(2, '0')
-      const minutes = String(date.getMinutes()).padStart(2, '0')
-      const seconds = String(date.getSeconds()).padStart(2, '0')
-      const milliseconds = String(date.getMilliseconds()).padStart(3, '0')
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const day = date.getDate().toString().padStart(2, '0')
 
-      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`
+      const hours = date.getHours().toString().padStart(2, '0')
+      const minutes = date.getMinutes().toString().padStart(2, '0')
+      const seconds = date.getSeconds().toString().padStart(2, '0')
+
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000`
     }
 
     const data = {
@@ -497,14 +505,16 @@ export default function User() {
       question: question,
       interval: !fast
         ? {
-            time_start: formatDateTime(start_time),
-            time_end: formatDateTime(end_time),
+            time_start: formatDate(formatToUTC(startDate)),
+            time_end: formatDate(formatToUTC(endDate)),
           }
         : null,
       executor_id: executorId ? +executorId : null,
       price: level === 5 ? 0 : price,
     }
+
     setLoadingSearch(true)
+    // @ts-ignore
     createProject(data).then(r => {
       setLoadingSearch(false)
       fetchProject()
@@ -609,26 +619,11 @@ export default function User() {
       question: string
       category_name: string
     }[]
-  >([
-    {
-      client_confirm: false,
-      executor_confirm: false,
-      created_at: 'dsa',
-      question: 'dsadas',
-      category_name: 'dsadas',
-    },
-    {
-      client_confirm: false,
-      executor_confirm: false,
-      created_at: 'dsa',
-      question: '22222222222',
-      category_name: '22222222',
-    },
-  ])
+  >([])
 
   useEffect(() => {
     getAllConfirmProjects({ for_executor: false }).then(data => {
-      // setConfirmProjects(data)
+      setConfirmProjects(data)
     })
   }, [])
 
