@@ -52,19 +52,26 @@ export const DisputeItem = ({
 
   const handleUpload = async (file: File) => {
     setIsUploading(true) // Устанавливаем состояние загрузки
+    // Получение расширения файла
+    const extension = file.name.split('.').pop()
 
     // Настройка параметров для загрузки файла в S3
-    const params = {
+    const params: AWS.S3.PutObjectRequest = {
       Bucket: '1d74bcbd-tellme24', // Название вашего бакета
-      Key: project_id + '', // Имя файла
+      Key: `${project_id}.${extension}}`, // Имя файла
       Body: file, // Сам файл
       ACL: 'public-read', // Доступ к файлу
       ContentType: file.type, // Тип файла
     }
 
     try {
+      const uploadOptions: AWS.S3.ManagedUpload.ManagedUploadOptions = {
+        partSize: 10 * 1024 * 1024, // Размер чанка (в данном случае 10 Мб)
+        queueSize: 2, // Количество параллельных загрузок
+      }
+
       // Загрузка файла в S3
-      const response = await s3.upload(params).promise()
+      const response = await s3.upload(params, uploadOptions).promise()
       console.log('Файл успешно загружен:', response.Location)
       setFileList([]) // Очищаем список файлов после успешной загрузки
       messageApi.success('Файл успешно загружен')
