@@ -277,7 +277,7 @@ export async function getAllDisputes(params: { for_executor: boolean }) {
     if (axios.isAxiosError(error)) {
       switch (error.status) {
         case 401:
-          return await HTTP401Exception(userId, getAllDisputes)
+          return await HTTP401Exception(userId, getAllDisputes, params)
       }
     } else if (error instanceof Error) {
       console.error(error.message)
@@ -295,7 +295,7 @@ export async function getAllConfirmProjects(params: { for_executor: boolean }) {
     if (axios.isAxiosError(error)) {
       switch (error.status) {
         case 401:
-          return await HTTP401Exception(userId, getAllConfirmProjects)
+          return await HTTP401Exception(userId, getAllConfirmProjects, params)
       }
     } else if (error instanceof Error) {
       console.error(error.message)
@@ -394,6 +394,24 @@ export async function getById() {
       switch (error.status) {
         case 401:
           return await HTTP401Exception(userId, getById)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
+export async function getProjectDifference() {
+  const instance = await axiosBase()
+  const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  try {
+    const response = await instance.get('/project/difference')
+    return response.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return await HTTP401Exception(userId, getProjectDifference)
       }
     } else if (error instanceof Error) {
       console.error(error.message)

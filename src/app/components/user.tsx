@@ -35,10 +35,12 @@ import {
   confirmProject,
   createProject,
   getAllConfirmProjects,
+  getAllDisputes,
   getCategories,
   getExecutorInfoById,
   getLevels,
   getNameExecutorProject,
+  getProjectDifference,
   getTaskInfo,
   getUserFree,
   getUserProject,
@@ -670,6 +672,7 @@ export default function User() {
         getAllConfirmProjects({ for_executor: false }).then(data => {
           setConfirmProjects(data)
         })
+        setActiveOrder(null)
       })
     }
 
@@ -743,6 +746,36 @@ export default function User() {
     return targetDate <= currentDate
   }
 
+  const [projectDifference, setProjectDifference] = useState<
+    { id: number; name: string }[] | null
+  >(null)
+
+  useEffect(() => {
+    getProjectDifference().then(dispute => {
+      setProjectDifference(dispute)
+    })
+  }, [])
+
+  const [disute, setDispute] = useState(null)
+
+  useEffect(() => {
+    getAllDisputes({ for_executor: false }).then(data => {
+      setDispute(data)
+    })
+  }, [])
+
+  const handleGiveIn = ({ project_id }: { project_id: number }) => {
+    confirmProject({
+      for_executor: false,
+      project_id: project_id,
+      value: true,
+    }).then(() => {
+      getProjectDifference().then(dispute => {
+        setProjectDifference(dispute)
+      })
+    })
+  }
+
   const [showCancelModal, setShowCancelModal] = useState(false)
 
   return (
@@ -804,49 +837,61 @@ export default function User() {
               </button>
             </div>
           }></Modal>
-        {/* <Modal
-          title='Опишите вашу проблему'
-          open={true}
-          style={{ background: 'var(--tg-theme-bg-color)' }}
-          closable={false}
-          maskClosable={false}
-          centered
-          footer={
-            <div className='flex gap-2 justify-between mt-5'>
-              <button className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
-                Открыть спор
-              </button>
-              <button className='w-full p-3 bg-green-500 text-tg-button-text-color rounded-xl'>
-                Уступить
-              </button>
-            </div>
-          }>
-          <div className='flex flex-wrap gap-2 mb-3'>
-            {category?.map(category => (
-              <button
-                key={category}
-                className={`text-[12px] rounded-xl px-2 py-1 ${!categoriesData.includes(category) ? 'bg-tg-section-second-color text-tg-text-color' : 'bg-tg-button-color text-tg-button-text-color'}`}
-                onClick={() => {
-                  if (categoriesData.includes(category)) {
-                    setCategoriesData(
-                      categoriesData.filter(item => item !== category),
-                    )
-                  } else {
-                    setCategoriesData([...categoriesData, category])
+        {projectDifference && projectDifference?.length > 0 && (
+          <Modal
+            title={
+              <div className='flex items-center gap-2'>
+                <ExclamationCircleOutlined />
+                Открытие спора c {projectDifference[0].name}
+              </div>
+            }
+            open={true}
+            style={{ background: 'var(--tg-theme-bg-color)' }}
+            closable={false}
+            maskClosable={false}
+            centered
+            footer={
+              <div className='flex gap-2 justify-between mt-5'>
+                <button className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                  Открыть спор {projectDifference[0].id}
+                </button>
+                <button
+                  onClick={() =>
+                    handleGiveIn({ project_id: projectDifference[0].id })
                   }
-                }}>
-                {category}
-              </button>
-            ))}
-          </div>
-          <TextArea
-            autoSize={{ minRows: 4, maxRows: 10 }}
-            size='large'
-            value={question}
-            onChange={e => setQuestion(e.target.value)}
-            placeholder='Опишите проблему'
-          />
-        </Modal> */}
+                  className='w-full p-3 bg-green-500 text-tg-button-text-color rounded-xl'>
+                  Уступить
+                </button>
+              </div>
+            }>
+            <div className='flex flex-wrap gap-2 mb-3 mt-2'>
+              {category?.map(category => (
+                <button
+                  key={category}
+                  className={`text-[12px] rounded-xl px-2 py-1 ${!categoriesData.includes(category) ? 'bg-tg-section-second-color text-tg-text-color' : 'bg-tg-button-color text-tg-button-text-color'}`}
+                  onClick={() => {
+                    if (categoriesData.includes(category)) {
+                      setCategoriesData(
+                        categoriesData.filter(item => item !== category),
+                      )
+                    } else {
+                      setCategoriesData([...categoriesData, category])
+                    }
+                  }}>
+                  {category}
+                </button>
+              ))}
+            </div>
+            <TextArea
+              autoSize={{ minRows: 4, maxRows: 10 }}
+              size='large'
+              value={question}
+              onChange={e => setQuestion(e.target.value)}
+              placeholder='Опишите проблему'
+            />
+          </Modal>
+        )}
+
         {confirmProjects?.length > 0 && currentModalIndex !== null && (
           <Modal
             title='Эксперт решил ваш вопрос?'
