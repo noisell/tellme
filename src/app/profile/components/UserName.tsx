@@ -1,16 +1,18 @@
 'use client'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ConfigProvider, Input, message, Spin } from 'antd'
 import { LoadingOutlined, UserOutlined } from '@ant-design/icons'
 import { getById, updateFirstName } from '@/app/API'
 import { useNav } from '@/context/navContext'
 import { GetByIdResponse } from '../../types'
+import {LoadingComponent} from "@/app/components/loadingComponent";
 
 export const UserName = () => {
   const { setShowNavigation, setActiveButton } = useNav()
   const [firstname, setFirstname] = useState<string>('')
   const [initFirstname, setInitFirstname] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const handleFirstnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFirstname(e.target.value)
   }
@@ -26,7 +28,8 @@ export const UserName = () => {
   }
 
   useEffect(() => {
-    getUserInfoById()
+    getUserInfoById().then()
+    setIsLoading(false)
   }, [])
 
   useEffect(() => {
@@ -51,6 +54,7 @@ export const UserName = () => {
     }
   }
   return (
+      isLoading ? <LoadingComponent /> :
     <div
       className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-b-3xl p-4 font-medium ${
         window.Telegram.WebApp.colorScheme === 'light' &&

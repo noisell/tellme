@@ -195,23 +195,20 @@ export async function authorization(
   startParam: string | undefined,
   time_zone: string,
 ) {
-  let access_token = await getAccessToken(user.id)
   let new_user: boolean = false
-  if (!access_token) {
-    let new_access_token = await login(user.id, user.username, webApp.initData)
-    if (!new_access_token) {
-      new_user = true
-      await createUser(
-        user.id,
-        user.first_name,
-        user.username,
-        startParam,
-        time_zone,
-      )
-      new_access_token = await login(user.id, user.username, webApp.initData)
-    }
-    await setCloudStorageItem('access_token', new_access_token)
+  let new_access_token = await login(user.id, user.username, webApp.initData)
+  if (!new_access_token) {
+    new_user = true
+    await createUser(
+      user.id,
+      user.first_name,
+      user.username,
+      startParam,
+      time_zone,
+    )
+    new_access_token = await login(user.id, user.username, webApp.initData)
   }
+  await setCloudStorageItem('access_token', new_access_token)
   return new_user
 }
 

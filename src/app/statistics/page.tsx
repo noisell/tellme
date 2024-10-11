@@ -67,19 +67,13 @@ export default function StatisticPage() {
   }
 
   useEffect(() => {
-    setLoading(true)
-    // @ts-ignore
-    getStatisticsFinance()
-      .then(res => setFinanceData(res))
-      .finally(() => setLoading(false))
-    getStatisticsOrders()
-      .then(res => setOrdersData(res))
-      .finally(() => setLoading(false))
+    getStatisticsFinance().then(res => setFinanceData(res))
+    getStatisticsOrders().then(res => setOrdersData(res))
+    setLoading(false)
   }, [])
 
-  if (loading) return <LoadingComponent />
-
   return (
+      loading ? <LoadingComponent /> :
     <main className='flex flex-col bg-tg-secondary-background-color items-center'>
       <div className='flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4'>
         <div className='flex w-full items-center ml-4 gap-2 font-medium '>
