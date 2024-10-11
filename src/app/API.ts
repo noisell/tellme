@@ -377,6 +377,24 @@ export async function addVideo(data: {
   }
 }
 
+export async function getNowWorkTime() {
+  const instance = await axiosBase()
+  const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  try {
+    const response = await instance.get('/executor/nowWorkTime')
+    return response.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return await HTTP401Exception(userId, getNowWorkTime)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
 export async function updateSkills(skills: string[]) {
   const instance = await axiosBase()
   const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number

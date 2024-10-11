@@ -4,7 +4,12 @@ import { ThunderboltOutlined } from '@ant-design/icons'
 import { message, ConfigProvider, Switch } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { IWebApp } from '@/context/types'
-import { changeOrdersAccept, getExecutorInfoById, getTaskInfo } from '@/app/API'
+import {
+  changeOrdersAccept,
+  getExecutorInfoById,
+  getNowWorkTime,
+  getTaskInfo,
+} from '@/app/API'
 import dayjs from 'dayjs'
 
 interface Props {
@@ -53,7 +58,23 @@ export function OrdersAcceptSection(props: Props) {
     })
   }
 
+  const [workTime, setWorkTime] = useState(true)
+
+  useEffect(() => {
+    getNowWorkTime().then(data => {
+      setWorkTime(data)
+      if (data === false) {
+        changeOrdersAccept(props.webApp.initDataUnsafe.user.id, data)
+      }
+    })
+  }, [])
+
   const handleSwitchChange = async () => {
+    if (!workTime) {
+      messageApi.warning('У вас нерабочее время!')
+      return
+    }
+
     // Check if the executor's schedule is empty using executorInfo
     if (
       executorInfo &&
@@ -127,7 +148,7 @@ export function OrdersAcceptSection(props: Props) {
             },
           }}>
           <Switch
-            checked={switchState} // Change from defaultValue to checked
+            checked={workTime && switchState} // Change from defaultValue to checked
             disabled={disabled}
             onChange={handleSwitchChange}
           />
