@@ -9,6 +9,7 @@ import {
 import AWS from 'aws-sdk'
 import { TextDispute } from './text-dispute'
 import { addVideo } from '../API'
+import { useRouter } from 'next/navigation'
 
 interface DisputeItemProps {
   project_id: number
@@ -27,6 +28,7 @@ export const DisputeItem = ({
   category,
   project_id,
   next,
+  admin_id,
   prev,
   question,
   hasNext,
@@ -37,6 +39,7 @@ export const DisputeItem = ({
   const [isUploading, setIsUploading] = useState(false) // Добавляем состояние загрузки
   const [messageApi, contextHolder] = message.useMessage()
   const [showVideoUpload, setShowVideoUpload] = useState(true)
+  const router = useRouter()
   // Конфигурация клиента S3
   const s3 = new AWS.S3({
     endpoint: 'https://s3.timeweb.cloud',
@@ -66,6 +69,7 @@ export const DisputeItem = ({
       messageApi.success('Файл успешно загружен')
       addVideo({ project_id, video_url: response.Location }).then(() => {
         setShowVideoUpload(false)
+        router.refresh()
       })
       fetchDisputeList()
     } catch (error) {
@@ -170,6 +174,12 @@ export const DisputeItem = ({
                 </button>
               </Upload>
             </ConfigProvider>
+          </div>
+        )}
+        {video_url && (
+          <div className='bg-tg-section-second-color text-[14px] w-full rounded-xl py-2 px-4 text-center flex justify-center items-center'>
+            {admin_id && <>Спор решается</>}
+            {!admin_id && <>Спор в обработке</>}
           </div>
         )}
         {hasNext && (
