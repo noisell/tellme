@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons'
 import AWS from 'aws-sdk'
 import { TextDispute } from './text-dispute'
+import { addVideo } from '../API'
 
 interface DisputeItemProps {
   project_id: number
@@ -15,17 +16,27 @@ interface DisputeItemProps {
   category: string
   admin_id?: number | null
   created_at: string
+  next: () => void
+  prev: () => void
+  hasNext: boolean
+  video_url: string | null
+  fetchDisputeList: () => void
 }
 
 export const DisputeItem = ({
   category,
   project_id,
+  next,
+  prev,
   question,
+  hasNext,
+  fetchDisputeList,
+  video_url,
 }: DisputeItemProps) => {
   const [fileList, setFileList] = useState<UploadFile[]>([])
   const [isUploading, setIsUploading] = useState(false) // Добавляем состояние загрузки
   const [messageApi, contextHolder] = message.useMessage()
-
+  const [showVideoUpload, setShowVideoUpload] = useState(true)
   // Конфигурация клиента S3
   const s3 = new AWS.S3({
     endpoint: 'https://s3.timeweb.cloud',
@@ -41,7 +52,7 @@ export const DisputeItem = ({
     // Настройка параметров для загрузки файла в S3
     const params = {
       Bucket: '1d74bcbd-tellme24', // Название вашего бакета
-      Key: file.name, // Имя файла
+      Key: project_id + '', // Имя файла
       Body: file, // Сам файл
       ACL: 'public-read', // Доступ к файлу
       ContentType: file.type, // Тип файла
@@ -53,6 +64,10 @@ export const DisputeItem = ({
       console.log('Файл успешно загружен:', response.Location)
       setFileList([]) // Очищаем список файлов после успешной загрузки
       messageApi.success('Файл успешно загружен')
+      addVideo({ project_id, video_url: response.Location }).then(() => {
+        setShowVideoUpload(false)
+      })
+      fetchDisputeList()
     } catch (error) {
       console.error('Ошибка загрузки файла:', error)
       messageApi.error('Ошибка загрузки файла')
@@ -107,53 +122,63 @@ export const DisputeItem = ({
       </div>
 
       <div className='flex justify-between mt-4 w-full gap-3 text-tg-accent-color'>
-        <button className='bg-tg-section-second-color rounded-xl py-2 px-4'>
-          <ArrowLeftOutlined />
-        </button>
-        <div className='w-full flex'>
-          <ConfigProvider
-            theme={{
-              components: {
-                Upload: {
-                  // Вы можете добавить дополнительные стили для компонента здесь
+        {hasNext && (
+          <button
+            onClick={prev}
+            className='bg-tg-section-second-color rounded-xl py-2 px-4'>
+            <ArrowLeftOutlined />
+          </button>
+        )}
+        {!video_url && (
+          <div className='w-full flex'>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Upload: {
+                    // Вы можете добавить дополнительные стили для компонента здесь
+                  },
                 },
-              },
-            }}>
-            <Upload
-              fileList={fileList}
-              onChange={handleFileChange}
-              beforeUpload={() => false} // Отключаем автоматическую загрузку
-              maxCount={1} // Ограничиваем до одного файла
-              multiple={false} // Отключаем множественную загрузку
-              accept='video/*' // Принимаем только видеофайлы
-              showUploadList={false} // Скрываем отображение списка файлов
-            >
-              <button
-                className='w-full text-center text-[14px] bg-tg-button-color text-tg-button-text-color rounded-xl py-2 px-4 flex items-center justify-center gap-2'
-                disabled={isUploading} // Блокируем кнопку при загрузке
+              }}>
+              <Upload
+                fileList={fileList}
+                onChange={handleFileChange}
+                beforeUpload={() => false} // Отключаем автоматическую загрузку
+                maxCount={1} // Ограничиваем до одного файла
+                multiple={false} // Отключаем множественную загрузку
+                accept='video/*' // Принимаем только видеофайлы
+                showUploadList={false} // Скрываем отображение списка файлов
               >
-                {isUploading ? (
-                  <>
-                    <Spin
-                      indicator={
-                        <LoadingOutlined spin style={{ color: 'white' }} />
-                      }
-                    />
-                    Идёт загрузка
-                  </>
-                ) : (
-                  <>
-                    <CloudUploadOutlined />
-                    Загрузить запись
-                  </>
-                )}
-              </button>
-            </Upload>
-          </ConfigProvider>
-        </div>
-        <button className='bg-tg-section-second-color rounded-xl py-2 px-4'>
-          <ArrowRightOutlined />
-        </button>
+                <button
+                  className='w-full text-center text-[14px] bg-tg-button-color text-tg-button-text-color rounded-xl py-2 px-4 flex items-center justify-center gap-2'
+                  disabled={isUploading} // Блокируем кнопку при загрузке
+                >
+                  {isUploading ? (
+                    <>
+                      <Spin
+                        indicator={
+                          <LoadingOutlined spin style={{ color: 'white' }} />
+                        }
+                      />
+                      Идёт загрузка
+                    </>
+                  ) : (
+                    <>
+                      <CloudUploadOutlined />
+                      Загрузить запись
+                    </>
+                  )}
+                </button>
+              </Upload>
+            </ConfigProvider>
+          </div>
+        )}
+        {hasNext && (
+          <button
+            onClick={next}
+            className='bg-tg-section-second-color rounded-xl py-2 px-4'>
+            <ArrowRightOutlined />
+          </button>
+        )}
       </div>
     </>
   )

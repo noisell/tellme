@@ -839,7 +839,7 @@ export default function User() {
           title='Вы уверены, что хотите отменить заказ?'
           open={showCancelModal}
           onClose={() => setShowCancelModal(false)}
-          style={{ background: 'var(--tg-theme-bg-color)' }}
+          style={{ background: 'var(--tg-theme-bg-color)', borderRadius: 20 }}
           centered
           closable={false}
           maskClosable={false}
@@ -879,7 +879,7 @@ export default function User() {
               </div>
             }
             open={true}
-            style={{ background: 'var(--tg-theme-bg-color)' }}
+            style={{ background: 'var(--tg-theme-bg-color)', borderRadius: 20 }}
             closable={false}
             maskClosable={false}
             centered
@@ -893,7 +893,7 @@ export default function User() {
                     })
                   }}
                   className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
-                  Открыть спор {projectDifference[0].id}
+                  Открыть спор
                 </button>
                 <button
                   onClick={() =>
@@ -936,7 +936,7 @@ export default function User() {
           <Modal
             title='Эксперт решил ваш вопрос?'
             open={true}
-            style={{ background: 'var(--tg-theme-bg-color)' }}
+            style={{ background: 'var(--tg-theme-bg-color)', borderRadius: 20 }}
             closable={false}
             maskClosable={false}
             centered

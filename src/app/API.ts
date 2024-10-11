@@ -356,6 +356,27 @@ export async function createDispute(data: {
   }
 }
 
+export async function addVideo(data: {
+  project_id: number
+  video_url: string
+}) {
+  const instance = await axiosBase()
+  const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  try {
+    const response = await instance.patch('/project/dispute/video/add', data)
+    return response.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return await HTTP401Exception(userId, addVideo, data)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
 export async function updateSkills(skills: string[]) {
   const instance = await axiosBase()
   const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number

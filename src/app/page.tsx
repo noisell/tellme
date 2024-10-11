@@ -263,6 +263,7 @@ export default function Home() {
       user_id: number
       executor_id: number
       message: string
+      category_name: string
       video_url: string
       admin_id: number | null
       active: boolean
@@ -299,10 +300,14 @@ export default function Home() {
 
   console.log(categories)
 
-  useEffect(() => {
+  const fetchDisputeList = async () => {
     getAllDisputes({ for_executor: true }).then(data => {
       setDisputeList(data)
     })
+  }
+
+  useEffect(() => {
+    fetchDisputeList()
   }, [])
 
   function isTimePassed(targetTime: string): boolean {
@@ -402,6 +407,24 @@ export default function Home() {
     })
   }
 
+  const [disputeIndex, setDisputeIndex] = useState<number>(0)
+
+  const nextDispute = () => {
+    if (disputeIndex + 1 === disputeList?.length) {
+      setDisputeIndex(0)
+    } else {
+      setDisputeIndex(disputeIndex + 1)
+    }
+  }
+
+  const prevDispute = () => {
+    if (disputeIndex === 0) {
+      setDisputeIndex(disputeList?.length - 1)
+    } else {
+      setDisputeIndex(disputeIndex - 1)
+    }
+  }
+
   const [showCancelModal, setShowCancelModal] = useState(false)
 
   function executorPage(pageData: ExecutorResponseData) {
@@ -440,7 +463,10 @@ export default function Home() {
             <Modal
               title='Решили ли вы вопрос?'
               open={true}
-              style={{ background: 'var(--tg-theme-bg-color)' }}
+              style={{
+                background: 'var(--tg-theme-bg-color)',
+                borderRadius: 20,
+              }}
               closable={false}
               maskClosable={false}
               centered
@@ -502,7 +528,7 @@ export default function Home() {
             title='Вы уверены, что хотите отменить заказ?'
             open={showCancelModal}
             onClose={() => setShowCancelModal(false)}
-            style={{ background: 'var(--tg-theme-bg-color)' }}
+            style={{ background: 'var(--tg-theme-bg-color)', borderRadius: 20 }}
             centered
             closable={false}
             maskClosable={false}
@@ -551,6 +577,10 @@ export default function Home() {
           }
           incomeToday={executor.amount}
         />
+        <OrdersAcceptSection
+          webApp={webApp as IWebApp}
+          acceptOrders={executor.accept_orders}
+        />
         {disputeList && (
           <div className='flex flex-col w-full h-auto items-center'>
             <div
@@ -574,26 +604,23 @@ export default function Home() {
                     <InfoCircleOutlined style={{ fontSize: '18px' }} />
                   </div>
                 </div>
-                {disputeList.map(item => {
-                  return (
-                    <DisputeItem
-                      key={item.project_id}
-                      project_id={item.project_id}
-                      created_at={item.created_at}
-                      category={item.category}
-                      admin_id={item.admin_id}
-                      question={item.question}
-                    />
-                  )
-                })}
+                <DisputeItem
+                  key={disputeList[disputeIndex].project_id}
+                  project_id={disputeList[disputeIndex].project_id}
+                  created_at={disputeList[disputeIndex].created_at}
+                  category={disputeList[disputeIndex].category_name}
+                  admin_id={disputeList[disputeIndex].admin_id}
+                  question={disputeList[disputeIndex].question}
+                  video_url={disputeList[disputeIndex].video_url}
+                  next={nextDispute}
+                  prev={prevDispute}
+                  hasNext={disputeList.length > 1}
+                  fetchDisputeList={fetchDisputeList}
+                />
               </div>
             </div>
           </div>
         )}
-        <OrdersAcceptSection
-          webApp={webApp as IWebApp}
-          acceptOrders={executor.accept_orders}
-        />
         {activeOrder && (
           <>
             <div className='flex flex-col w-full h-auto items-center'>
