@@ -33,6 +33,7 @@ import { Categories, Level, Price, TreeCategories } from '@/app/types'
 import {
   cancelProject,
   confirmProject,
+  createDispute,
   createProject,
   getAllConfirmProjects,
   getAllDisputes,
@@ -747,7 +748,7 @@ export default function User() {
   }
 
   const [projectDifference, setProjectDifference] = useState<
-    { id: number; name: string }[] | null
+    { id: number; name: string; executor_id: number }[] | null
   >(null)
 
   useEffect(() => {
@@ -772,6 +773,38 @@ export default function User() {
     }).then(() => {
       getProjectDifference().then(dispute => {
         setProjectDifference(dispute)
+      })
+    })
+  }
+
+  const [messageDispute, setMessageDispute] = useState('')
+
+  const handleCreateDisput = ({
+    executor_id,
+    project_id,
+  }: {
+    executor_id: number
+    project_id: number
+  }) => {
+    if (categoriesData.length === 0 || messageDispute === '') {
+      messageApi.warning('Опишите вашу проблему')
+
+      return
+    }
+
+    let sendMessage = categoriesData.join(', ') + ' ' + messageDispute
+    // console.log(sendMessage)
+
+    createDispute({
+      message: sendMessage,
+      executor_id,
+      project_id,
+      video_url: null,
+    }).then(() => {
+      getProjectDifference().then(dispute => {
+        setProjectDifference(dispute)
+        setCategoriesData([])
+        setMessageDispute('')
       })
     })
   }
@@ -852,7 +885,14 @@ export default function User() {
             centered
             footer={
               <div className='flex gap-2 justify-between mt-5'>
-                <button className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
+                <button
+                  onClick={() => {
+                    handleCreateDisput({
+                      executor_id: projectDifference[0].executor_id,
+                      project_id: projectDifference[0].id,
+                    })
+                  }}
+                  className='w-full p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'>
                   Открыть спор {projectDifference[0].id}
                 </button>
                 <button
@@ -885,8 +925,8 @@ export default function User() {
             <TextArea
               autoSize={{ minRows: 4, maxRows: 10 }}
               size='large'
-              value={question}
-              onChange={e => setQuestion(e.target.value)}
+              value={messageDispute}
+              onChange={e => setMessageDispute(e.target.value)}
               placeholder='Опишите проблему'
             />
           </Modal>

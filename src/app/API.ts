@@ -10,6 +10,7 @@ import {
   Top,
   UserData,
 } from '@/app/types'
+import { NullableBoolean } from 'aws-sdk/clients/autoscaling'
 
 const baseURL = 'https://api.two-market.ru'
 export const axiosBase = async (cookie: boolean = false) => {
@@ -317,7 +318,37 @@ export async function confirmProject(data: {
     if (axios.isAxiosError(error)) {
       switch (error.status) {
         case 401:
-          return await HTTP401Exception(userId, confirmProject)
+          return await HTTP401Exception(userId, confirmProject, data)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
+export async function createDispute(data: {
+  project_id: number
+  executor_id: number
+  message: string
+  video_url: string | null
+}) {
+  const instance = await axiosBase()
+  const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+  const dataParams = {
+    user_id: userId,
+    project_id: data.project_id,
+    executor_id: data.executor_id,
+    message: data.message,
+    video_url: data.video_url,
+  }
+  try {
+    const response = await instance.post('/project/dispute/create', dataParams)
+    return response.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return await HTTP401Exception(userId, createDispute, dataParams)
       }
     } else if (error instanceof Error) {
       console.error(error.message)
