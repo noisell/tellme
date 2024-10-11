@@ -1,7 +1,6 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
-  Carousel,
   ConfigProvider,
   Input,
   message,
@@ -17,15 +16,12 @@ import {
   OrderedListOutlined,
   UserOutlined,
 } from '@ant-design/icons'
-import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import { createExecutor, getCategories, setCloudStorageItem } from '@/app/API'
 import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
-import { div } from 'framer-motion/client'
 
 export default function NewExecutorPage() {
   const { setShowNavigation } = useNav()
-  const [openDrawer, setOpenDrawer] = useState<boolean>(true)
   const [treeData, setTreeData] = useState<TreeDataNode[]>([])
   const [firstname, setFirstname] = useState<string | undefined>(
     window.Telegram.WebApp.initDataUnsafe.user?.first_name,
@@ -68,6 +64,20 @@ export default function NewExecutorPage() {
     console.log(newTags)
     setTags(newTags)
   }
+
+  useEffect(() => {
+    const backButton = window.Telegram.WebApp.BackButton
+    backButton.show()
+    backButton.onClick(() => {
+      router.back()
+    })
+    return () => {
+      backButton.hide()
+      backButton.offClick(() => {
+        router.back()
+      })
+    }
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)

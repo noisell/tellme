@@ -1,7 +1,11 @@
-import { SettingOutlined, UserOutlined } from '@ant-design/icons'
+'use client'
+
+import { UserOutlined } from '@ant-design/icons'
 import { Progress } from 'antd'
 import React from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useNav } from '@/context/navContext'
 
 interface Props {
   levelID: number
@@ -14,11 +18,17 @@ interface Props {
 }
 
 export function HeaderSection(props: Props) {
+  const { setActiveButton } = useNav()
   const router = useRouter()
   return (
     <div className='flex flex-col w-full h-auto items-center bg-tg-section-color from-cyan-950 to-cyan-800 rounded-b-3xl p-4'>
       <div className='flex w-full mt-2 justify-between items-center'>
-        <div className='flex gap-2 items-center rounded-xl py-2 px-3 bg-tg-section-second-color'>
+        <Link
+          href={'/profile'}
+          onClick={() => {
+            setActiveButton('/profile')
+          }}
+          className='flex gap-2 items-center rounded-xl py-2 px-3 bg-tg-section-second-color'>
           <div className='flex'>
             <UserOutlined
               style={{
@@ -36,7 +46,7 @@ export function HeaderSection(props: Props) {
                 : props.first_name}
             </p>
           </div>
-        </div>
+        </Link>
         <div
           className='flex flex-col items-center text-xs w-full px-5'
           onClick={() => {

@@ -1115,6 +1115,12 @@ export default function User() {
                 Подключиться к звонку
               </button>
             )}
+            {activeOrder.info.start_time && (
+              <div className='text-tg-subtitle-color text-center text-[12px] mt-1'>
+                Звонок будет доступен в{' '}
+                {formatToUserTimezone(activeOrder.info.start_time)}
+              </div>
+            )}
           </div>
         )}
 

@@ -15,6 +15,7 @@ import {
   getCloudStorageItem,
   getExecutorProject,
   getLevels,
+  getNameExecutorProject,
   setCloudStorageItem,
   updateShortcutClicks,
   userInfoForPage,
@@ -40,7 +41,6 @@ import Link from 'next/link'
 import { DisputeItem } from './components/dispute-item'
 import { DrawerDispute } from './components/drawerDispute'
 import { TextDispute } from './components/text-dispute'
-import { span } from 'framer-motion/client'
 
 export default function Home() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
@@ -91,7 +91,7 @@ export default function Home() {
           | 'dispute'
       }[]
     | null
-  >(null)
+  >([])
 
   useEffect(() => {
     getCategories().then(r => {
@@ -100,6 +100,7 @@ export default function Home() {
       }
     })
   }, [])
+
   useEffect(() => {
     getLevels().then(r => {
       if (r) {
@@ -107,6 +108,33 @@ export default function Home() {
       }
     })
   }, [])
+
+  const [userNames, setUserNames] = useState<
+    { project_id: number; name: string | null }[]
+  >([])
+
+  useEffect(() => {
+    if (activeProjects) {
+      const names: { project_id: number; name: string }[] = []
+
+      for (let i = 0; i < activeProjects.length; i++) {
+        getNameExecutorProject({
+          for_executor: true,
+          project_id: activeProjects[i].id,
+        }).then(r => {
+          if (r) {
+            names.push({
+              project_id: activeProjects[i].id,
+              name: r,
+            })
+          }
+        })
+      }
+
+      setUserNames(names)
+    }
+  }, [activeProjects])
+
   useEffect(() => {
     if (webApp && user) {
       console.log('WEBAPP', webApp)
@@ -303,30 +331,16 @@ export default function Home() {
       question: string
       category_name: string
     }[]
-  >([
-    // {
-    //   project_id: 1,
-    //   client_confirm: false,
-    //   executor_confirm: false,
-    //   created_at: 'dsa',
-    //   question:
-    //     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque ab hic amet accusamus, quaerat nihil sunt ut porro modi voluptate officiis deserunt, et magnam adipisci velit eius dicta laudantium fugit?',
-    //   category_name: 'dsadas',
-    // },
-    // {
-    //   project_id: 2,
-    //   client_confirm: false,
-    //   executor_confirm: false,
-    //   created_at: 'dsa',
-    //   question: '22222222222',
-    //   category_name: '22222222',
-    // },
-  ])
+  >([])
 
-  useEffect(() => {
+  const fetchAllConfirmProjects = async () => {
     getAllConfirmProjects({ for_executor: true }).then(data => {
       setConfirmProjects(data)
     })
+  }
+
+  useEffect(() => {
+    fetchAllConfirmProjects()
   }, [])
 
   const [loadingNone, setLoadingNone] = useState<boolean>(false)
@@ -355,6 +369,7 @@ export default function Home() {
       setCurrentModalIndex(currentModalIndex + 1) // Открыть следующую модалку
     } else {
       setCurrentModalIndex(null) // Закрыть все модалки, если это была последняя
+      fetchAllConfirmProjects()
     }
   }
 
@@ -382,8 +397,6 @@ export default function Home() {
       })
     })
   }
-
-  console.log(confirmProjects?.length, currentModalIndex)
 
   const [showCancelModal, setShowCancelModal] = useState(false)
 
@@ -627,7 +640,13 @@ export default function Home() {
                     <div className='flex items-center gap-2'>
                       <div className='text-center flex-grow flex-shrink-0'>
                         <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center'>
-                          {activeOrder.price.price} ₽
+                          {userNames?.find(
+                            user => user.project_id === activeOrder.id,
+                          )?.name ? (
+                            <>№ {activeOrder.id}</>
+                          ) : (
+                            <>{activeOrder.price.price} ₽</>
+                          )}
                         </div>
                       </div>
                       <div className='text-center flex-grow flex-shrink-0'>
@@ -659,55 +678,71 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                {activeOrder.info.start_time === null && (
-                  <button
-                    onClick={() => {
-                      window.open(activeOrder.video_cal_url, '_blank')
-                    }}
-                    className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 cursor-pointer`}
-                    style={{ width: '100%' }}>
-                    Подключиться к звонку
-                  </button>
-                )}
-                {activeOrder.info.start_time && (
-                  <button
-                    onClick={() => {
-                      window.open(activeOrder.video_cal_url, '_blank')
-                    }}
-                    disabled={
-                      !(
-                        activeOrder.info.start_time &&
-                        isTimePassed(
-                          formatToUserTimezone(activeOrder.info.start_time),
-                        )
-                      )
-                    }
-                    className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 ${!(activeOrder.info.start_time && isTimePassed(formatToUserTimezone(activeOrder.info.start_time))) ? 'opacity-55 cursor-not-allowed' : 'cursor-pointer'}`}
-                    style={{ width: '100%' }}>
-                    Подключиться к звонку
-                  </button>
-                )}
-
-                {activeOrder.info.start_time && (
-                  <div className='text-tg-subtitle-color text-center text-[12px] mt-1'>
-                    Звонок будет доступен в{' '}
-                    {formatToUserTimezone(activeOrder.info.start_time)}
+                {userNames?.find(user => user.project_id === activeOrder.id)
+                  ?.name && (
+                  <div className='flex items-center justify-between gap-2 text-[12px]'>
+                    <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center'>
+                      {activeOrder.price.price} ₽
+                    </div>
+                    <div className='flex w-full bg-tg-section-second-color rounded-2xl px-1 py-1.5 items-center justify-center'>
+                      {
+                        userNames?.find(
+                          user => user.project_id === activeOrder.id,
+                        )?.name
+                      }
+                    </div>
                   </div>
                 )}
-                {activeProjects.length > 1 && (
-                  <div className='flex justify-between mt-4 w-full gap-3'>
+                <div className='flex justify-between mt-4 w-full gap-3'>
+                  {activeProjects.length > 1 && (
                     <button
                       className='bg-tg-section-second-color text-tg-button-text-color rounded-xl py-2 px-4'
                       onClick={prev} // функция для перехода на предыдущую страницу
                     >
                       <ArrowLeftOutlined />
                     </button>
+                  )}
+                  {activeOrder.info.start_time === null && (
+                    <button
+                      onClick={() => {
+                        window.open(activeOrder.video_cal_url, '_blank')
+                      }}
+                      className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl cursor-pointer`}
+                      style={{ width: '100%' }}>
+                      Подключиться к звонку
+                    </button>
+                  )}
+                  {activeOrder.info.start_time && (
+                    <button
+                      onClick={() => {
+                        window.open(activeOrder.video_cal_url, '_blank')
+                      }}
+                      disabled={
+                        !(
+                          activeOrder.info.start_time &&
+                          isTimePassed(
+                            formatToUserTimezone(activeOrder.info.start_time),
+                          )
+                        )
+                      }
+                      className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl ${!(activeOrder.info.start_time && isTimePassed(formatToUserTimezone(activeOrder.info.start_time))) ? 'opacity-55 cursor-not-allowed' : 'cursor-pointer'}`}
+                      style={{ width: '100%' }}>
+                      Подключиться к звонку
+                    </button>
+                  )}
+                  {activeProjects.length > 1 && (
                     <button
                       className='bg-tg-section-second-color text-tg-button-text-color rounded-xl py-2 px-4'
                       onClick={next} // функция для перехода на следующую страницу
                     >
                       <ArrowRightOutlined />
                     </button>
+                  )}
+                </div>
+                {activeOrder.info.start_time && (
+                  <div className='text-tg-subtitle-color text-center text-[12px] mt-1'>
+                    Звонок будет доступен в{' '}
+                    {formatToUserTimezone(activeOrder.info.start_time)}
                   </div>
                 )}
               </div>

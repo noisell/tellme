@@ -19,7 +19,7 @@ window.Telegram = {
   WebApp: {
     initDataUnsafe: {
       user: {
-        id: 321312312,
+        id: 844642570,
         username: 'Nikita',
         first_name: 'Nikita228',
       },
