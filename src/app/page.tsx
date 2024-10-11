@@ -361,6 +361,9 @@ export default function Home() {
     }).then(() => {
       setLoadingNone(false)
       setLoadingYes(false)
+      getExecutorProject().then(data => {
+        setActiveProjects(data)
+      })
     })
     if (
       currentModalIndex !== null &&
@@ -385,6 +388,7 @@ export default function Home() {
           question: '',
         },
       ])
+
       setCurrentModalIndex(0)
     }
   }
@@ -418,6 +422,7 @@ export default function Home() {
                 headerBg: 'var(--tg-theme-section-bg-color)',
                 titleColor: 'var(--tg-theme-text-color)',
                 colorText: 'var(--tg-theme-text-color)',
+                borderRadius: 20,
               },
               Input: {
                 colorBgContainer: 'var(--tg-second-section-color)',
@@ -709,7 +714,7 @@ export default function Home() {
                       }}
                       className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl cursor-pointer`}
                       style={{ width: '100%' }}>
-                      Подключиться к звонку
+                      Подключиться
                     </button>
                   )}
                   {activeOrder.info.start_time && (
@@ -727,7 +732,7 @@ export default function Home() {
                       }
                       className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl ${!(activeOrder.info.start_time && isTimePassed(formatToUserTimezone(activeOrder.info.start_time))) ? 'opacity-55 cursor-not-allowed' : 'cursor-pointer'}`}
                       style={{ width: '100%' }}>
-                      Подключиться к звонку
+                      Подключиться
                     </button>
                   )}
                   {activeProjects.length > 1 && (

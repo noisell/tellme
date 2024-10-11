@@ -667,6 +667,9 @@ export default function User() {
       }).then(() => {
         setLoadingNone(false)
         setLoadingYes(false)
+        getAllConfirmProjects({ for_executor: false }).then(data => {
+          setConfirmProjects(data)
+        })
       })
     }
 
@@ -677,6 +680,9 @@ export default function User() {
       setCurrentModalIndex(currentModalIndex + 1) // Открыть следующую модалку
     } else {
       setCurrentModalIndex(null) // Закрыть все модалки, если это была последняя
+      getAllConfirmProjects({ for_executor: false }).then(data => {
+        setConfirmProjects(data)
+      })
     }
   }
 
@@ -749,6 +755,7 @@ export default function User() {
               headerBg: 'var(--tg-theme-section-bg-color)',
               titleColor: 'var(--tg-theme-text-color)',
               colorText: 'var(--tg-theme-text-color)',
+              borderRadius: 20,
             },
             Input: {
               colorBgContainer: 'var(--tg-second-section-color)',
@@ -1094,7 +1101,7 @@ export default function User() {
                 }}
                 className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 cursor-pointer`}
                 style={{ width: '100%' }}>
-                Подключиться к звонку
+                Подключиться
               </button>
             )}
             {activeOrder.info.start_time && (
@@ -1112,7 +1119,7 @@ export default function User() {
                 }
                 className={`text-center p-3 bg-tg-button-color text-tg-button-text-color rounded-xl mt-3 ${!(activeOrder.info.start_time && isTimePassed(formatToUserTimezone(activeOrder.info.start_time))) ? 'opacity-55 cursor-not-allowed' : 'cursor-pointer'}`}
                 style={{ width: '100%' }}>
-                Подключиться к звонку
+                Подключиться
               </button>
             )}
             {activeOrder.info.start_time && (
