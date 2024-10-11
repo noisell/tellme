@@ -612,10 +612,10 @@ export default function Home() {
                   admin_id={disputeList[disputeIndex].admin_id}
                   question={disputeList[disputeIndex].question}
                   video_url={disputeList[disputeIndex].video_url}
+                  setDisputeList={setDisputeList}
                   next={nextDispute}
                   prev={prevDispute}
                   hasNext={disputeList.length > 1}
-                  fetchDisputeList={fetchDisputeList}
                 />
               </div>
             </div>

@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons'
 import AWS from 'aws-sdk'
 import { TextDispute } from './text-dispute'
-import { addVideo } from '../API'
+import { addVideo, getAllDisputes } from '../API'
 import { useRouter } from 'next/navigation'
 
 interface DisputeItemProps {
@@ -21,7 +21,7 @@ interface DisputeItemProps {
   prev: () => void
   hasNext: boolean
   video_url: string | null
-  fetchDisputeList: () => void
+  setDisputeList: (res: any) => void
 }
 
 export const DisputeItem = ({
@@ -32,7 +32,7 @@ export const DisputeItem = ({
   prev,
   question,
   hasNext,
-  fetchDisputeList,
+  setDisputeList,
   video_url,
 }: DisputeItemProps) => {
   const [fileList, setFileList] = useState<UploadFile[]>([])
@@ -67,11 +67,12 @@ export const DisputeItem = ({
       console.log('Файл успешно загружен:', response.Location)
       setFileList([]) // Очищаем список файлов после успешной загрузки
       messageApi.success('Файл успешно загружен')
-      addVideo({ project_id, video_url: response.Location }).then(() => {
+      addVideo({ project_id, video_url: response.Location }).then(res => {
         setShowVideoUpload(false)
-        router.refresh()
+        getAllDisputes({ for_executor: true }).then(data => {
+          setDisputeList(data)
+        })
       })
-      fetchDisputeList()
     } catch (error) {
       console.error('Ошибка загрузки файла:', error)
       messageApi.error('Ошибка загрузки файла')
