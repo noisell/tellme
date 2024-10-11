@@ -8,7 +8,7 @@ import {
 } from '@ant-design/icons'
 import AWS from 'aws-sdk'
 import { TextDispute } from './text-dispute'
-import { addVideo, getAllDisputes } from '../API'
+import { addVideo, getAllDisputes, uploadVideoToBack } from '../API'
 import { useRouter } from 'next/navigation'
 
 interface DisputeItemProps {
@@ -48,34 +48,16 @@ export const DisputeItem = ({
     secretAccessKey: 'Tqe58oD57zo1NFcu3GORTagvfMBriwR2FLxfSbJi',
     region: 'ru-1',
     signatureVersion: 'v4',
+    httpOptions: {
+      timeout: 300000,
+      connectTimeout: 300000,
+    },
   })
 
   const handleUpload = async (file: File) => {
     setIsUploading(true) // Устанавливаем состояние загрузки
-    // Получение расширения файла
-    const extension = file.name.split('.').pop()
-
-    // Настройка параметров для загрузки файла в S3
-    const params: AWS.S3.PutObjectRequest = {
-      Bucket: '1d74bcbd-tellme24', // Название вашего бакета
-      Key: `${project_id}.${extension}}`, // Имя файла
-      Body: file, // Сам файл
-      ACL: 'public-read', // Доступ к файлу
-      ContentType: file.type, // Тип файла
-    }
-
     try {
-      const uploadOptions: AWS.S3.ManagedUpload.ManagedUploadOptions = {
-        partSize: 10 * 1024 * 1024, // Размер чанка (в данном случае 10 Мб)
-        queueSize: 2, // Количество параллельных загрузок
-      }
-
-      // Загрузка файла в S3
-      const response = await s3.upload(params, uploadOptions).promise()
-      console.log('Файл успешно загружен:', response.Location)
-      setFileList([]) // Очищаем список файлов после успешной загрузки
-      messageApi.success('Файл успешно загружен')
-      addVideo({ project_id, video_url: response.Location }).then(res => {
+      uploadVideoToBack({ file, project_id }).then(res => {
         setShowVideoUpload(false)
         getAllDisputes({ for_executor: true }).then(data => {
           setDisputeList(data)

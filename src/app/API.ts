@@ -392,6 +392,49 @@ export async function getNowWorkTime() {
   }
 }
 
+export async function uploadVideoToBack({
+  file,
+  project_id,
+}: {
+  file: File
+  project_id: number
+}) {
+  const instance = await axiosBase()
+  const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
+
+  const renamedFile = new File(
+    [file],
+    `${project_id}.${file.name.split('.').pop()}`,
+    {
+      type: file.type,
+    },
+  )
+
+  const formData = new FormData()
+  formData.append('file', renamedFile)
+  formData.append('project_id', String(project_id))
+
+  console.log(renamedFile.name)
+
+  try {
+    const response = await instance.post('/project/upload/video', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Explicitly set the Content-Type
+      },
+    })
+    return response.data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      switch (error.status) {
+        case 401:
+          return await HTTP401Exception(userId, getNowWorkTime)
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
 export async function updateSkills(skills: string[]) {
   const instance = await axiosBase()
   const userId = window.Telegram.WebApp.initDataUnsafe.user?.id as number
