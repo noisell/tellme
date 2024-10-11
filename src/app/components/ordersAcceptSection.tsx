@@ -63,9 +63,6 @@ export function OrdersAcceptSection(props: Props) {
   useEffect(() => {
     getNowWorkTime().then(data => {
       setWorkTime(data)
-      if (data === false) {
-        changeOrdersAccept(props.webApp.initDataUnsafe.user.id, data)
-      }
     })
   }, [])
 
