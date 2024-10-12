@@ -6,10 +6,8 @@ import {
   ArrowRightOutlined,
   LoadingOutlined,
 } from '@ant-design/icons'
-import AWS from 'aws-sdk'
 import { TextDispute } from './text-dispute'
-import { addVideo, getAllDisputes, uploadVideoToBack } from '../API'
-import { useRouter } from 'next/navigation'
+import { getAllDisputes, uploadVideoToBack } from '../API'
 
 interface DisputeItemProps {
   project_id: number
@@ -40,24 +38,13 @@ export const DisputeItem = ({
   const [isUploading, setIsUploading] = useState(false) // Добавляем состояние загрузки
   const [messageApi, contextHolder] = message.useMessage()
   const [showVideoUpload, setShowVideoUpload] = useState(true)
-  const router = useRouter()
-  // Конфигурация клиента S3
-  const s3 = new AWS.S3({
-    endpoint: 'https://s3.timeweb.cloud',
-    accessKeyId: 'PKG54KTOL8XGWFIOOQGB',
-    secretAccessKey: 'Tqe58oD57zo1NFcu3GORTagvfMBriwR2FLxfSbJi',
-    region: 'ru-1',
-    signatureVersion: 'v4',
-    httpOptions: {
-      timeout: 300000,
-      connectTimeout: 300000,
-    },
-  })
 
   const handleUpload = async (file: File) => {
     setIsUploading(true) // Устанавливаем состояние загрузки
+
     try {
-      uploadVideoToBack({ file, project_id }).then(res => {
+      // Загрузка сжатого видео на сервер
+      uploadVideoToBack({ file: file, project_id }).then(res => {
         setShowVideoUpload(false)
         getAllDisputes({ for_executor: true }).then(data => {
           setDisputeList(data)

@@ -416,6 +416,9 @@ export async function uploadVideoToBack({
 
   console.log(renamedFile.name)
 
+  console.log('file', file.size)
+  return
+
   try {
     const response = await instance.post('/project/upload/video', formData, {
       headers: {

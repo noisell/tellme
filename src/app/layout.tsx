@@ -42,6 +42,8 @@ export default function RootLayout({
   //   }
   // }, [])
 
+  if (typeof window === 'undefined') return <></>
+
   return (
     <html lang='en'>
       <head>

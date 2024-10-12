@@ -67,8 +67,13 @@ export function OrdersAcceptSection(props: Props) {
   }, [])
 
   const handleSwitchChange = async () => {
-    if (!workTime) {
-      messageApi.warning('У вас нерабочее время!')
+    // Ensure all tasks are completed before proceeding
+    if (
+      !taskInfo.subscription ||
+      taskInfo.shortcut !== 2 ||
+      taskInfo.invite !== 2
+    ) {
+      messageApi.warning('Сначала выполните все задания!')
       return
     }
 
@@ -82,13 +87,8 @@ export function OrdersAcceptSection(props: Props) {
       return
     }
 
-    // Ensure all tasks are completed before proceeding
-    if (
-      !taskInfo.subscription ||
-      taskInfo.shortcut !== 2 ||
-      taskInfo.invite !== 2
-    ) {
-      messageApi.warning('Сначала выполните все задания!')
+    if (!workTime) {
+      messageApi.warning('У вас нерабочее время!')
       return
     }
 

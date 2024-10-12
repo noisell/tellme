@@ -604,26 +604,27 @@ export default function User() {
   }
 
   function collectCategoryData(categories: any) {
-    // @ts-ignore
-    const result = []
+    // Initialize the result array
+    const result: any[] = []
 
-    // @ts-ignore
-    function traverse(category) {
-      // Добавляем объект с id и name в массив
+    // Function to traverse each category and its children
+    function traverse(category: any) {
+      // Add an object with id and name to the result array
       result.push({ id: category.id, name: category.name })
 
-      // Если у категории есть вложенные, проходим по ним
+      // If the category has children, recursively traverse them
       if (category.children && category.children.length > 0) {
-        // @ts-ignore
-        category.children.forEach(child => traverse(child))
+        category.children.forEach((child: any) => traverse(child))
       }
     }
 
-    // Итерируем по всем корневым категориям
-    // @ts-ignore
-    categories.forEach(category => traverse(category))
+    // Check if categories is an array and not undefined
+    if (Array.isArray(categories)) {
+      categories.forEach((category: any) => traverse(category))
+    } else {
+      console.error('categories is undefined or not an array')
+    }
 
-    // @ts-ignore
     return result
   }
   const [categoriesData, setCategoriesData] = useState<string[]>([])
@@ -1281,16 +1282,7 @@ export default function User() {
                       ),
                     }}
                     onChange={onChange}
-                    treeData={tree.map(node => ({
-                      ...node,
-                      disabled: true, // Верхний уровень отключен для выбора
-                      children: node.children
-                        ? node.children.map(child => ({
-                            ...child,
-                            disabled: false, // Дочерние элементы активны и могут быть выбраны
-                          }))
-                        : [],
-                    }))} // Используем модифицированные данные
+                    treeData={tree} // Используем модифицированные данные
                     onPopupScroll={onPopupScroll}
                     size='large'
                     suffixIcon={

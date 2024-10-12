@@ -272,7 +272,21 @@ export default function Home() {
       created_at: string
       category: string
     }[]
-  >([])
+  >([
+    {
+      project_id: 0,
+      user_id: 0,
+      executor_id: 0,
+      message: '',
+      category_name: '',
+      video_url: '',
+      admin_id: null,
+      active: false,
+      question: '',
+      created_at: '',
+      category: '',
+    },
+  ])
 
   function formatToUserTimezone(dateString: string): string {
     // Преобразуем строку в объект Date (UTC)
@@ -303,7 +317,7 @@ export default function Home() {
 
   const fetchDisputeList = async () => {
     getAllDisputes({ for_executor: true }).then(data => {
-      setDisputeList(data)
+      // setDisputeList(data)
     })
   }
 
@@ -582,7 +596,7 @@ export default function Home() {
           webApp={webApp as IWebApp}
           acceptOrders={executor.accept_orders}
         />
-        {disputeList && (
+        {disputeList && disputeList[disputeIndex] && (
           <div className='flex flex-col w-full h-auto items-center'>
             <div
               className={`flex flex-col w-full h-auto mt-3 bg-tg-section-color rounded-3xl py-4 px-4 ${
