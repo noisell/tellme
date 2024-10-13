@@ -23,9 +23,7 @@ import { useNav } from '@/context/navContext'
 export default function NewExecutorPage() {
   const { setShowNavigation } = useNav()
   const [treeData, setTreeData] = useState<TreeDataNode[]>([])
-  const [firstname, setFirstname] = useState<string | undefined>(
-    window.Telegram.WebApp.initDataUnsafe.user?.first_name,
-  )
+  const [firstname, setFirstname] = useState<string | undefined>(undefined)
   const [initTags, _setInitTags] = useState([
     'Photoshop',
     'Программирую на Kotlin',
@@ -66,6 +64,7 @@ export default function NewExecutorPage() {
   }
 
   useEffect(() => {
+    setFirstname(window.Telegram.WebApp.initDataUnsafe.user?.first_name)
     const backButton = window.Telegram.WebApp.BackButton
     backButton.show()
     backButton.onClick(() => {

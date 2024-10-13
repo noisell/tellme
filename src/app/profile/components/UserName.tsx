@@ -57,7 +57,7 @@ export const UserName = () => {
       isLoading ? <LoadingComponent /> :
     <div
       className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-b-3xl p-4 font-medium ${
-        window.Telegram.WebApp.colorScheme === 'light' &&
+        window && window.Telegram.WebApp.colorScheme === 'light' &&
         'shadow-md shadow-gray-400'
       }`}>
       <ConfigProvider

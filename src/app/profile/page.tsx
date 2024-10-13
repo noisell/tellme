@@ -19,7 +19,7 @@ export default function ProfilePage() {
 
   const handleChangeAccount = async () => {
     await setCloudStorageItem('currentPage', 'user')
-    router.replace('/')
+    router.push('/')
   }
 
   return (

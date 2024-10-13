@@ -96,10 +96,7 @@ export const Category = () => {
 
   return (
     <div
-      className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium ${
-        window.Telegram.WebApp.colorScheme === 'light' &&
-        'shadow-md shadow-gray-400'
-      }`}>
+      className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4 font-medium`}>
       <ConfigProvider
         theme={{
           components: {

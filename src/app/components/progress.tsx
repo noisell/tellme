@@ -231,7 +231,7 @@ export function TasksProgress(props: Props) {
             style={{ width: '80%' }}
             onClick={() => {
               window.Telegram.WebApp.openLink(
-                `https://two-market.ru/shortcut/${window.Telegram.WebApp.initDataUnsafe.user?.id}`,
+                `https://tellme.tips/shortcut/${window.Telegram.WebApp.initDataUnsafe.user?.id}`,
               )
             }}
             className='flex p-3 rounded-xl bg-tg-button-color justify-center gap-1 items-center font-bold text-tg-button-text-color'>

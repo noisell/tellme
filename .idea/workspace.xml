@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="222ab2c4-9742-4b39-aaaf-c16a6d1ef835" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/API.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/API.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/new-executor/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/new-executor/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/profile/components/Category.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/profile/components/Category.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/profile/components/Skills.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/profile/components/Skills.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/profile/components/UserName.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/profile/components/UserName.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/profile/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/profile/page.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+        <option value="JavaScript File" />
+        <option value="TypeScript JSX File" />
+        <option value="Dockerfile" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file:///etc/fonts/fonts.conf" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2lFB7HTV5siZHeSGW1zGTPXhFV8" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;nik&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/DATA/Tellme&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.stylelint&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.javascript.prettier&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/DATA/Tellme/frontend/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Tellme\frontend\src\app" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/tellme" />
+      <recent name="D:\Tellme\frontend\src\app\level" />
+      <recent name="D:\Tellme\frontend\src\app\statistics\components" />
+      <recent name="D:\Tellme\frontend\src\app" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.22855.92" />
+        <option value="bundled-python-sdk-b068d85d1acf-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.22855.92" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="222ab2c4-9742-4b39-aaaf-c16a6d1ef835" name="Changes" comment="" />
+      <created>1724765774633</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1724765774633</updated>
+      <workItem from="1724765775691" duration="14206000" />
+      <workItem from="1724990084875" duration="6340000" />
+      <workItem from="1725231703701" duration="9799000" />
+      <workItem from="1725366705291" duration="19736000" />
+      <workItem from="1725435791465" duration="10270000" />
+      <workItem from="1725544417786" duration="1737000" />
+      <workItem from="1725560024053" duration="75905000" />
+      <workItem from="1725832377038" duration="1409000" />
+      <workItem from="1725834010394" duration="73344000" />
+      <workItem from="1726049023749" duration="18131000" />
+      <workItem from="1726141462030" duration="41777000" />
+      <workItem from="1726316959819" duration="62761000" />
+      <workItem from="1726467385525" duration="140863000" />
+      <workItem from="1726846474488" duration="430000" />
+      <workItem from="1726867189519" duration="2803000" />
+      <workItem from="1726918978896" duration="53000" />
+      <workItem from="1726919076530" duration="167000" />
+      <workItem from="1726919256310" duration="2672000" />
+      <workItem from="1726921937634" duration="4263000" />
+      <workItem from="1727001751123" duration="6950000" />
+      <workItem from="1727092172494" duration="516000" />
+      <workItem from="1727102933776" duration="28851000" />
+      <workItem from="1727248606508" duration="375000" />
+      <workItem from="1727248989411" duration="12688000" />
+      <workItem from="1727327466492" duration="14139000" />
+      <workItem from="1727436015351" duration="4752000" />
+      <workItem from="1727510308272" duration="296000" />
+      <workItem from="1727526748784" duration="30775000" />
+      <workItem from="1727619904366" duration="10930000" />
+      <workItem from="1727685793405" duration="23376000" />
+      <workItem from="1727844901273" duration="11548000" />
+      <workItem from="1727871042848" duration="14349000" />
+      <workItem from="1727964434777" duration="15738000" />
+      <workItem from="1728027404557" duration="26157000" />
+      <workItem from="1728103461959" duration="22395000" />
+      <workItem from="1728193473325" duration="14874000" />
+      <workItem from="1728233478275" duration="5983000" />
+      <workItem from="1728295899067" duration="1422000" />
+      <workItem from="1728331556391" duration="89000" />
+      <workItem from="1728374496711" duration="19791000" />
+      <workItem from="1728459823808" duration="26211000" />
+      <workItem from="1728541022440" duration="647000" />
+      <workItem from="1728562565060" duration="20314000" />
+      <workItem from="1728637208619" duration="26280000" />
+      <workItem from="1728723341600" duration="33027000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
