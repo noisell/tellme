@@ -599,7 +599,7 @@ export default function User() {
       await setCloudStorageItem('currentPage', 'executor')
       window.location.reload()
     } else {
-      router.replace('/new-executor')
+      router.push('/new-executor')
     }
   }
 
@@ -657,6 +657,7 @@ export default function User() {
   const [loadingYes, setLoadingYes] = useState<boolean>(false)
 
   const handleClose = (string: 'yes' | 'none', boolean: boolean) => {
+    // TODO
     if (string === 'yes') {
       setLoadingYes(true)
     } else {
@@ -673,6 +674,9 @@ export default function User() {
         setLoadingYes(false)
         getAllConfirmProjects({ for_executor: false }).then(data => {
           setConfirmProjects(data)
+        })
+        getProjectDifference().then(dispute => {
+          setProjectDifference(dispute)
         })
         setActiveOrder(null)
       })
@@ -813,7 +817,7 @@ export default function User() {
   const [showCancelModal, setShowCancelModal] = useState(false)
 
   return (
-    <main className='flex w-full flex-col bg-tg-secondary-background-color items-center'>
+    <main className='flex w-full flex-col bg-tg-secondary-background-color items-center pb-[20px]'>
       <ConfigProvider
         theme={{
           components: {
@@ -1414,7 +1418,11 @@ export default function User() {
                   size='large'
                   typeof='number'
                   style={{ backgroundColor: 'transparent', paddingLeft: 0 }}
-                  placeholder='Поиск по коду исполнителя'
+                  placeholder={
+                    allExecutor
+                      ? 'Поиск по коду исполнителя'
+                      : 'Введите код исполнителя'
+                  }
                   disabled={allExecutor}
                   onChange={e => setExecutorId(e.target.value)}
                   value={executorId}
@@ -1455,7 +1463,7 @@ export default function User() {
               </button>
               <p className='text-[10px] mt-1 w-full text-center text-tg-subtitle-color px-2'>
                 Создавая заказ вы принимаете нашу{' '}
-                <Link href='http://localhost:8080'>публичную оферту</Link>
+                <Link href='/offer'>публичную оферту</Link>
               </p>
             </div>
           </div>

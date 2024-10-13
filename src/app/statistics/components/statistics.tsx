@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   ArrowUpOutlined,
   ArrowDownOutlined,
   RiseOutlined,
   FallOutlined,
 } from '@ant-design/icons'
+import { useRouter } from 'next/navigation'
 
 type Props = {
   title: string
@@ -24,6 +25,21 @@ function numberFormat(number: number): string {
 }
 
 export function Statistics(props: Props) {
+  const router = useRouter()
+  useEffect(() => {
+    const backButton = window.Telegram.WebApp.BackButton
+    backButton.show()
+    backButton.onClick(() => {
+      router.back()
+    })
+    return () => {
+      backButton.hide()
+      backButton.offClick(() => {
+        router.back()
+      })
+    }
+  }, [])
+
   const arrow = props.ratio === 'up' ? <RiseOutlined /> : <FallOutlined />
   const percent_arrow =
     props.ratio === 'up' ? <ArrowUpOutlined /> : <ArrowDownOutlined />

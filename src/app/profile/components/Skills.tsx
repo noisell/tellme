@@ -86,6 +86,10 @@ export const Skills = () => {
               contentBg: 'var(--tg-second-section-color)',
               colorText: 'var(--tg-theme-text-color)',
             },
+            Input: {
+              activeShadow: 'none',
+              colorTextPlaceholder: '#9c9c9c',
+            },
           },
         }}>
         {contextHolder}

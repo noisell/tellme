@@ -33,7 +33,7 @@ export function TasksProgress(props: Props) {
   const [modalOpenSub, setModalOpenSub] = useState(false)
   const [modalOpenLabel, setModalOpenLabel] = useState(false)
   const [content, setContent] = useState<React.ReactNode>(<></>)
-  const botUrl = 'https://t.me/ссылка-на-бота'
+  const botUrl = `https://t.me/Tellme_tips_bot?startapp=referer${props.user_id}`
   const text = `Привет дорогой друг! Присоединяйся к Tellme - ${botUrl}`
   const [messageApi, contextHolder] = message.useMessage()
   const [typeAccount, setTypeAccount] = useState<'user' | 'executor' | null>(
@@ -63,6 +63,18 @@ export function TasksProgress(props: Props) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(botUrl)
+      success('Ссылка скопирована!')
+    } catch (er) {
+      error('Не получилось скопировать...')
+      console.error('Ошибка копирования:', er)
+    }
+  }
+
+  const handleCopyShortcut = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        `https://tellme.tips/shortcut/${props.user_id}`,
+      )
       success('Ссылка скопирована!')
     } catch (er) {
       error('Не получилось скопировать...')
@@ -211,7 +223,7 @@ export function TasksProgress(props: Props) {
           }}>
           {contextHolder}
         </ConfigProvider>
-        <img src='/folders.gif' alt='My GIF' width={'60%'} />
+        <img src='/thunder.gif' alt='My GIF' width={'60%'} />
         <span className='flex flex-col text-left mt-5 gap-y-2'>
           <p
             className='font-bold w-full text-center'
@@ -239,7 +251,7 @@ export function TasksProgress(props: Props) {
           </button>
           <button
             className='bg-tg-button-color rounded-xl p-3 text-tg-button-text-color'
-            onClick={handleCopy}>
+            onClick={handleCopyShortcut}>
             <ContentCopyIcon fontSize='medium' />
           </button>
         </div>

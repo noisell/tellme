@@ -16,6 +16,7 @@ import {
   getExecutorProject,
   getLevels,
   getNameExecutorProject,
+  getNewLevel,
   getNowWorkTime,
   setCloudStorageItem,
   updateShortcutClicks,
@@ -42,6 +43,8 @@ import Link from 'next/link'
 import { DisputeItem } from './components/dispute-item'
 import { DrawerDispute } from './components/drawerDispute'
 import { TextDispute } from './components/text-dispute'
+import { formatToUserTimezone, getOrderWord } from '@/utils'
+import Image from 'next/image'
 
 export default function Home() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
@@ -272,21 +275,7 @@ export default function Home() {
       created_at: string
       category: string
     }[]
-  >([
-    {
-      project_id: 0,
-      user_id: 0,
-      executor_id: 0,
-      message: '',
-      category_name: '',
-      video_url: '',
-      admin_id: null,
-      active: false,
-      question: '',
-      created_at: '',
-      category: '',
-    },
-  ])
+  >([])
 
   function formatToUserTimezone(dateString: string): string {
     // Преобразуем строку в объект Date (UTC)
@@ -317,7 +306,7 @@ export default function Home() {
 
   const fetchDisputeList = async () => {
     getAllDisputes({ for_executor: true }).then(data => {
-      // setDisputeList(data)
+      setDisputeList(data)
     })
   }
 
@@ -381,6 +370,7 @@ export default function Home() {
     }).then(() => {
       setLoadingNone(false)
       setLoadingYes(false)
+      fetchDisputeList()
       getExecutorProject().then(data => {
         setActiveProjects(data)
       })
@@ -440,12 +430,28 @@ export default function Home() {
     }
   }
 
+  const [newLevel, setNewLevel] = useState<{
+    increased: boolean
+    id: number
+    name: string
+    count_orders_start: number
+    count_orders_completed: number
+    count_orders_closed: number
+  } | null>(null)
+
+  useEffect(() => {
+    getNewLevel().then(data => {
+      setNewLevel(data)
+    })
+  }, [])
+
   const [showCancelModal, setShowCancelModal] = useState(false)
 
   function executorPage(pageData: ExecutorResponseData) {
     setShowNavigation(true)
     const user = pageData.user
     const executor = pageData.executor
+
     return (
       <main className='flex w-full flex-col bg-tg-secondary-background-color items-center'>
         <DrawerDispute
@@ -575,6 +581,70 @@ export default function Home() {
                 </button>
               </div>
             }></Modal>
+          {newLevel && (
+            <Modal
+              open={!!newLevel}
+              onClose={() => setNewLevel(null)}
+              style={{
+                background: 'var(--tg-theme-bg-color)',
+                borderRadius: 20,
+              }}
+              centered
+              closeIcon={null}
+              maskClosable
+              footer={
+                <>
+                  <div className='flex flex-col justify-between gap-2'>
+                    <img
+                      src={`/${newLevel.id}.gif`}
+                      width={150}
+                      height={150}
+                      className='mx-auto'
+                      alt=''
+                    />
+                    <div className='text-center mt-3'>
+                      <div>
+                        У вас новый уровень:{' '}
+                        <span className='text-tg-accent-color'>
+                          {newLevel.name}
+                        </span>
+                      </div>
+                      {newLevel.id === 4 && (
+                        <div>Вы достигли максимального уровня</div>
+                      )}
+                      {newLevel.id !== 4 && (
+                        <div>
+                          До следующего уровня{' '}
+                          <span className='text-tg-accent-color'>
+                            {newLevel.count_orders_completed -
+                              newLevel.count_orders_closed}{' '}
+                            {getOrderWord(
+                              newLevel.count_orders_completed -
+                                newLevel.count_orders_closed,
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className='flex gap-2 justify-between mt-5'>
+                    <button
+                      onClick={() => setNewLevel(null)}
+                      disabled={loadingCancel}
+                      className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
+                      {loadingCancel && (
+                        <Spin
+                          indicator={
+                            <LoadingOutlined spin style={{ color: 'white' }} />
+                          }
+                        />
+                      )}
+                      Супер!
+                    </button>
+                  </div>
+                </>
+              }></Modal>
+          )}
         </ConfigProvider>
 
         <HeaderSection
@@ -596,46 +666,6 @@ export default function Home() {
           webApp={webApp as IWebApp}
           acceptOrders={executor.accept_orders}
         />
-        {disputeList && disputeList[disputeIndex] && (
-          <div className='flex flex-col w-full h-auto items-center'>
-            <div
-              className={`flex flex-col w-full h-auto mt-3 bg-tg-section-color rounded-3xl py-4 px-4 ${
-                window.Telegram.WebApp.colorScheme === 'light' &&
-                'shadow-md shadow-gray-400'
-              }`}>
-              <div className='flex flex-col w-full items-center justify-between mt-1 font-medium mb-3 px-1'>
-                <div className='flex items-center justify-between w-full'>
-                  <div className='flex w-full items-center gap-2 text-orange-500'>
-                    <ExclamationCircleOutlined />
-                    <div>
-                      <div className='font-medium' style={{ width: '100%' }}>
-                        Активные споры
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className='text-tg-subtitle-color cursor-pointer'
-                    onClick={() => setOpenDrawerDispute(true)}>
-                    <InfoCircleOutlined style={{ fontSize: '18px' }} />
-                  </div>
-                </div>
-                <DisputeItem
-                  key={disputeList[disputeIndex].project_id}
-                  project_id={disputeList[disputeIndex].project_id}
-                  created_at={disputeList[disputeIndex].created_at}
-                  category={disputeList[disputeIndex].category_name}
-                  admin_id={disputeList[disputeIndex].admin_id}
-                  question={disputeList[disputeIndex].question}
-                  video_url={disputeList[disputeIndex].video_url}
-                  setDisputeList={setDisputeList}
-                  next={nextDispute}
-                  prev={prevDispute}
-                  hasNext={disputeList.length > 1}
-                />
-              </div>
-            </div>
-          </div>
-        )}
         {activeOrder && (
           <>
             <div className='flex flex-col w-full h-auto items-center'>
@@ -795,6 +825,46 @@ export default function Home() {
               </div>
             </div>
           </>
+        )}
+        {disputeList && disputeList[disputeIndex] && (
+          <div className='flex flex-col w-full h-auto items-center'>
+            <div
+              className={`flex flex-col w-full h-auto mt-3 bg-tg-section-color rounded-3xl py-4 px-4 ${
+                window.Telegram.WebApp.colorScheme === 'light' &&
+                'shadow-md shadow-gray-400'
+              }`}>
+              <div className='flex flex-col w-full items-center justify-between mt-1 font-medium mb-3 px-1'>
+                <div className='flex items-center justify-between w-full'>
+                  <div className='flex w-full items-center gap-2 text-orange-500'>
+                    <ExclamationCircleOutlined />
+                    <div>
+                      <div className='font-medium' style={{ width: '100%' }}>
+                        Активные споры
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className='text-tg-subtitle-color cursor-pointer'
+                    onClick={() => setOpenDrawerDispute(true)}>
+                    <InfoCircleOutlined style={{ fontSize: '18px' }} />
+                  </div>
+                </div>
+                <DisputeItem
+                  key={disputeList[disputeIndex].project_id}
+                  project_id={disputeList[disputeIndex].project_id}
+                  created_at={disputeList[disputeIndex].created_at}
+                  category={disputeList[disputeIndex].category_name}
+                  admin_id={disputeList[disputeIndex].admin_id}
+                  question={disputeList[disputeIndex].question}
+                  video_url={disputeList[disputeIndex].video_url}
+                  setDisputeList={setDisputeList}
+                  next={nextDispute}
+                  prev={prevDispute}
+                  hasNext={disputeList.length > 1}
+                />
+              </div>
+            </div>
+          </div>
         )}
         {executor.level.id === 1 ? (
           <TasksProgress user_id={executor.user_id} />

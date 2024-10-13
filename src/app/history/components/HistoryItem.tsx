@@ -8,6 +8,7 @@ import {
   CloseCircleOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons'
+import { formatToUserTimezone } from '@/utils'
 
 interface HistoryItemProps {
   price: number
@@ -88,7 +89,7 @@ export const HistoryItem = ({
               style={{ fontSize: '14px' }}>
               {category_name}
             </span>
-            <span className=''>{formatDate(date)}</span>
+            <span className=''>{formatToUserTimezone(date)}</span>
           </div>
         </div>
         <div className='text-[20px]'>

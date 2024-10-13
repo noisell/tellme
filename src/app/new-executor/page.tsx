@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation'
 import { useNav } from '@/context/navContext'
 
 export default function NewExecutorPage() {
+  const router = useRouter()
   const { setShowNavigation } = useNav()
   const [treeData, setTreeData] = useState<TreeDataNode[]>([])
   const [firstname, setFirstname] = useState<string | undefined>(undefined)
@@ -149,7 +150,6 @@ export default function NewExecutorPage() {
   }
 
   const tagChild = tags.map(forMap)
-  const router = useRouter()
   const newExecutor = async () => {
     if (firstname === '') {
       warning('Введите имя пользователя!')

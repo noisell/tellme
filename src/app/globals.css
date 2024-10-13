@@ -232,3 +232,30 @@ main {
 .ant-upload {
   width: 100% !important;
 }
+
+.MuiPaper-root {
+  background-color: 'transparent' !important;
+}
+.MuiPaper-elevation {
+  background-color: 'transparent' !important;
+}
+.MuiPaper-elevation16 {
+  background-color: 'transparent' !important;
+}
+.MuiDrawer-paper {
+  background-color: 'transparent' !important;
+}
+.MuiDrawer-paperAnchorBottom {
+  background-color: 'transparent' !important;
+}
+.css-dl7nww-MuiPaper-root-MuiDrawer-paper {
+  background-color: 'transparent' !important;
+}
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation16.MuiDrawer-paper.MuiDrawer-paperAnchorBottom.css-dl7nww-MuiPaper-root-MuiDrawer-paper {
+  background-color: 'transparent' !important;
+}
+
+.ant-picker-time-panel-cell.ant-picker-time-panel-cell-selected
+  .ant-picker-time-panel-cell-inner {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}

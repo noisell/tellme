@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { HistoryItem } from './components/HistoryItem'
 import { getHistoryProjectExecutor } from '../API'
 import { useRouter } from 'next/navigation'
+import { useNav } from '@/context/navContext'
 
 interface ICustomType {
   id: number
@@ -23,8 +24,11 @@ interface ICustomType {
 export default function HistoryExecutorPage() {
   const [history, setHistory] = useState<ICustomType[]>([])
   const [loading, setLoading] = useState(true)
+  const { setShowNavigation } = useNav()
   const router = useRouter()
+
   useEffect(() => {
+    setShowNavigation(false)
     getHistoryProjectExecutor({ limit: 1000, offset: 0 })
       .then(data => {
         const res = data as ICustomType[]

@@ -12,30 +12,30 @@ export default function StatisticPage() {
   const router = useRouter()
   const [financeData, setFinanceData] = useState({
     day: {
-      amount: 1200,
-      percent: -23.09,
+      amount: 0,
+      percent: 0,
     },
     month: {
-      amount: 111,
-      percent: -23.09,
+      amount: 0,
+      percent: 0,
     },
     all: {
-      amount: 1200,
-      percent: -23.09,
+      amount: 0,
+      percent: 0,
     },
   })
   const [ordersData, setOrdersData] = useState({
     responses: {
-      count: 228,
-      percent: 12.54,
+      count: 0,
+      percent: 0,
     },
     orders: {
-      count: 228,
-      percent: 12.54,
+      count: 0,
+      percent: 0,
     },
     disputes: {
-      count: 228,
-      percent: 12.54,
+      count: 0,
+      percent: 0,
     },
   })
   const [loading, setLoading] = useState(true)
@@ -72,10 +72,11 @@ export default function StatisticPage() {
     setLoading(false)
   }, [])
 
-  return (
-      loading ? <LoadingComponent /> :
+  return loading ? (
+    <LoadingComponent />
+  ) : (
     <main className='flex flex-col bg-tg-secondary-background-color items-center'>
-      <div className='flex flex-col w-full h-auto items-center bg-tg-section-color rounded-3xl mt-3 p-4'>
+      <div className='flex flex-col w-full h-auto items-center bg-tg-section-color rounded-b-3xl p-4'>
         <div className='flex w-full items-center ml-4 gap-2 font-medium '>
           <BarChartOutlined />
           <p>Статистика доходов</p>

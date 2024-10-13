@@ -26,6 +26,17 @@ export const axiosBase = async (cookie: boolean = false) => {
     withCredentials: cookie,
   })
 }
+// const baseURL = 'https://api.two-market.ru'
+// export const axiosBase = async (cookie: boolean = false) => {
+//   return axios.create({
+//     baseURL: baseURL,
+//     headers: {
+//       Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZ0FBQUFBQm5DOWtBNmIzYkx0SW9rZ0Q4bUFKNmpURFBsaDZIVTJ1MG5qWU9qN3pvWmFTMmM0ejlNaDJJZmNtLTNtcVJRN0wwV3laSEpON1BRQmVjcTY0bWdGNTlZMTlSX3c9PSIsInN1cGVydXNlciI6ZmFsc2UsImV4cCI6MTcyODg4OTY5Ni43ODQ0OTZ9.BIVeXHIieweEPSq9OkJhl0nQFeGyBIgl0MJ0CS5B55ujKv6HH4GLkdWvWfJx5Q2MEYQmqq4knOmglpCveZbJLBexeyzuzgMQXILGXzchKHTwKGPfRwJjXHnHQRUhs1nBU0U5rXBfAQ7LMOBurixbG_PZZkqG5emPzp2Yh8B2IIQBsN_RyxuRiCMb5VKI7u3mO2WAPuar-Fbv_zDWtkUnYa8dizjVzxk6L7c9Wg5zusTBDu8baxVOAdYURrxPBXTOpWoR_zGymqb1kzEl6piVby8UdIYLG4XYl1FR4lULVqYdLjZP_PhUlRWP8BF6FpumPrTFJZQtjCVlMhq3dta5zw`,
+//       'Content-Type': 'application/json',
+//     },
+//     withCredentials: cookie,
+//   })
+// }
 
 export async function checkStartParam(startParam: string | undefined) {
   if (startParam) {
@@ -414,11 +425,6 @@ export async function uploadVideoToBack({
   formData.append('file', renamedFile)
   formData.append('project_id', String(project_id))
 
-  console.log(renamedFile.name)
-
-  console.log('file', file.size)
-  return
-
   try {
     const response = await instance.post('/project/upload/video', formData, {
       headers: {
@@ -685,13 +691,31 @@ export async function getHistoryProjectExecutor(params: {
 }) {
   const instance = await axiosBase()
   try {
-    return (await instance.get('/project/active/executor', { params })).data
+    return (await instance.get('/project/history/executor', { params })).data
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       if (error.status === 401) {
         return await HTTP401Exception(
           window.Telegram.WebApp.initDataUnsafe.user?.id as number,
           getHistoryProjectExecutor,
+        )
+      }
+    } else if (error instanceof Error) {
+      console.error(error.message)
+    }
+  }
+}
+
+export async function getNewLevel() {
+  const instance = await axiosBase()
+  try {
+    return (await instance.get('/executor/recalculate/level')).data
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      if (error.status === 401) {
+        return await HTTP401Exception(
+          window.Telegram.WebApp.initDataUnsafe.user?.id as number,
+          getNewLevel,
         )
       }
     } else if (error instanceof Error) {

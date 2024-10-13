@@ -5,7 +5,7 @@ import { LoadingOutlined, UserOutlined } from '@ant-design/icons'
 import { getById, updateFirstName } from '@/app/API'
 import { useNav } from '@/context/navContext'
 import { GetByIdResponse } from '../../types'
-import {LoadingComponent} from "@/app/components/loadingComponent";
+import { LoadingComponent } from '@/app/components/loadingComponent'
 
 export const UserName = () => {
   const { setShowNavigation, setActiveButton } = useNav()
@@ -53,11 +53,13 @@ export const UserName = () => {
         .finally(() => setLoading(false))
     }
   }
-  return (
-      isLoading ? <LoadingComponent /> :
+  return isLoading ? (
+    <LoadingComponent />
+  ) : (
     <div
       className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-b-3xl p-4 font-medium ${
-        window && window.Telegram.WebApp.colorScheme === 'light' &&
+        window &&
+        window.Telegram.WebApp.colorScheme === 'light' &&
         'shadow-md shadow-gray-400'
       }`}>
       <ConfigProvider
