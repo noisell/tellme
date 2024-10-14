@@ -12,6 +12,7 @@ import {
 } from '@/app/types'
 
 // const baseURL = 'https://api.tellme.tips'
+const baseURL = 'https://api.two-market.ru'
 // export const axiosBase = async (cookie: boolean = false) => {
 //   return axios.create({
 //     baseURL: baseURL,
@@ -25,7 +26,6 @@ import {
 //     withCredentials: cookie,
 //   })
 // }
-const baseURL = 'https://api.two-market.ru'
 export const axiosBase = async (cookie: boolean = false) => {
   return axios.create({
     baseURL: baseURL,

@@ -308,8 +308,14 @@ export function TitlePage() {
               theme={{
                 components: {
                   Input: {
-                    activeShadow: 'none',
-                    colorTextPlaceholder: '#9c9c9c',
+                    colorBgContainer: 'var(--tg-second-section-color)',
+                    colorBorder: 'transparent',
+                    colorText: 'var(--tg-theme-text-color)',
+                    colorTextPlaceholder: 'var(--tg-theme-subtitle-text-color)',
+                    borderRadiusLG: 12,
+                    activeBorderColor: 'transparent',
+                    activeShadow: 'transparent',
+                    hoverBorderColor: 'transparent',
                   },
                 },
               }}>
@@ -391,8 +397,14 @@ export function TitlePage() {
               theme={{
                 components: {
                   Input: {
-                    activeShadow: 'none',
-                    colorTextPlaceholder: '#9c9c9c',
+                    colorBgContainer: 'var(--tg-second-section-color)',
+                    colorBorder: 'transparent',
+                    colorText: 'var(--tg-theme-text-color)',
+                    colorTextPlaceholder: 'var(--tg-theme-subtitle-text-color)',
+                    borderRadiusLG: 12,
+                    activeBorderColor: 'transparent',
+                    activeShadow: 'transparent',
+                    hoverBorderColor: 'transparent',
                   },
                 },
               }}>

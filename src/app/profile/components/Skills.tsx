@@ -87,8 +87,14 @@ export const Skills = () => {
               colorText: 'var(--tg-theme-text-color)',
             },
             Input: {
-              activeShadow: 'none',
-              colorTextPlaceholder: '#9c9c9c',
+              colorBgContainer: 'var(--tg-second-section-color)',
+              colorBorder: 'transparent',
+              colorText: 'var(--tg-theme-text-color)',
+              colorTextPlaceholder: 'var(--tg-theme-subtitle-text-color)',
+              borderRadiusLG: 12,
+              activeBorderColor: 'transparent',
+              activeShadow: 'transparent',
+              hoverBorderColor: 'transparent',
             },
           },
         }}>
@@ -119,8 +125,14 @@ export const Skills = () => {
           theme={{
             components: {
               Input: {
-                activeShadow: 'none',
-                colorTextPlaceholder: '#9c9c9c',
+                colorBgContainer: 'var(--tg-second-section-color)',
+                colorBorder: 'transparent',
+                colorText: 'var(--tg-theme-text-color)',
+                colorTextPlaceholder: 'var(--tg-theme-subtitle-text-color)',
+                borderRadiusLG: 12,
+                activeBorderColor: 'transparent',
+                activeShadow: 'transparent',
+                hoverBorderColor: 'transparent',
               },
             },
           }}>
