@@ -596,7 +596,7 @@ export default function Home() {
                 </button>
               </div>
             }></Modal>
-          {newLevel && (
+          {newLevel && newLevel.increased && (
             <Drawer
               open={newLevel !== null}
               setOpen={() => setNewLevel(null)}

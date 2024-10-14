@@ -416,12 +416,14 @@ export default function User() {
     }
     if (!allExecutor) {
       if (executorId) {
+        setLoadingSearch(true)
         const res = await getCheckExecutor({ executor_id: executorId })
         if (res === false) {
           error('Нет эксперта с таком кодом!')
+          setLoadingSearch(false)
+          return
         }
-
-        return
+        setLoadingSearch(false)
       }
     }
     if (!level) {
@@ -548,13 +550,13 @@ export default function User() {
       price: level === 5 ? 0 : price,
     }
 
-    // setLoadingSearch(true)
-    // // @ts-ignore
-    // createProject(data).then(r => {
-    //   setLoadingSearch(false)
-    //   fetchProject()
-    //   success('Заказ успешно создан!')
-    // })
+    setLoadingSearch(true)
+    // @ts-ignore
+    createProject(data).then(r => {
+      setLoadingSearch(false)
+      fetchProject()
+      success('Заказ успешно создан!')
+    })
   }
 
   const phrases = [
