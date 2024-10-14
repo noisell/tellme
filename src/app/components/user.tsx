@@ -38,6 +38,7 @@ import {
   getAllConfirmProjects,
   getAllDisputes,
   getCategories,
+  getCheckExecutor,
   getExecutorInfoById,
   getLevels,
   getNameExecutorProject,
@@ -400,7 +401,7 @@ export default function User() {
   }, [activeOrder])
 
   const [loadingSearch, setLoadingSearch] = useState(false)
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (!value) {
       error('Сначала выберите категорию!')
       return
@@ -408,6 +409,16 @@ export default function User() {
     if (!allExecutor) {
       if (!executorId) {
         error('Введите код исполнителя!')
+        return
+      }
+    }
+    if (!allExecutor) {
+      if (executorId) {
+        const res = await getCheckExecutor({ executor_id: executorId })
+        if (res === false) {
+          error('Нет эксперта с таком кодом!')
+        }
+
         return
       }
     }
@@ -535,13 +546,13 @@ export default function User() {
       price: level === 5 ? 0 : price,
     }
 
-    setLoadingSearch(true)
-    // @ts-ignore
-    createProject(data).then(r => {
-      setLoadingSearch(false)
-      fetchProject()
-      success('Заказ успешно создан!')
-    })
+    // setLoadingSearch(true)
+    // // @ts-ignore
+    // createProject(data).then(r => {
+    //   setLoadingSearch(false)
+    //   fetchProject()
+    //   success('Заказ успешно создан!')
+    // })
   }
 
   const phrases = [

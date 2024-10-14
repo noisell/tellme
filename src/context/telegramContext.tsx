@@ -17,6 +17,7 @@ export const TelegramContext = createContext<ITelegramContext>({})
 
 // window.Telegram = {
 //   WebApp: {
+//     // @ts-ignore
 //     initDataUnsafe: {
 //       user: {
 //         id: 844642570,
@@ -26,23 +27,28 @@ export const TelegramContext = createContext<ITelegramContext>({})
 //     },
 //     offEvent: () => {},
 //     HapticFeedback: {
+//       //@ts-ignore
 //       impactOccurred(style) {
 //         console.log(style)
 //       },
 //     },
 //     BackButton: {
 //       hide() {},
+//       // @ts-ignore
 //       offClick(callback) {},
 //       show() {},
+//       // @ts-ignore
 //       onClick(callback) {},
 //     },
 //     initData: 'lala',
 //     ready: () => {},
+//     // @ts-ignore
 //     onEvent: (
 //       type: 'popupClosed',
 //       callback: { button_id: string | null },
 //     ) => {},
 //     CloudStorage: {
+//       // @ts-ignore
 //       setItem(
 //         key: string,
 //         value: string,
@@ -50,6 +56,7 @@ export const TelegramContext = createContext<ITelegramContext>({})
 //       ): void {
 //         console.log('setItem')
 
+//         // @ts-ignore
 //         if (!this.isValidKey(key)) {
 //           callback?.(new Error('Invalid key'), false)
 //           return
@@ -67,13 +74,16 @@ export const TelegramContext = createContext<ITelegramContext>({})
 //         } catch (error) {
 //           console.error(error)
 
+//           // @ts-ignore
 //           callback?.(error, false)
 //         }
 //       },
+//       // @ts-ignore
 //       getItem(
 //         key: string,
 //         callback: (err: Error | null, value: string | null) => void,
 //       ): void {
+//         // @ts-ignore
 //         if (!this.isValidKey(key)) {
 //           callback(new Error('Invalid key'), null)
 //           return
@@ -82,6 +92,7 @@ export const TelegramContext = createContext<ITelegramContext>({})
 //           const value = localStorage.getItem(key)
 //           callback(null, value)
 //         } catch (error) {
+//           // @ts-ignore
 //           callback(error, null)
 //         }
 //       },

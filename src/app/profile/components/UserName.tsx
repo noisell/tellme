@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { ConfigProvider, Input, message, Spin } from 'antd'
-import { LoadingOutlined, UserOutlined } from '@ant-design/icons'
+import { CopyOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons'
 import { getById, updateFirstName } from '@/app/API'
 import { useNav } from '@/context/navContext'
 import { GetByIdResponse } from '../../types'
@@ -16,6 +16,7 @@ export const UserName = () => {
   const handleFirstnameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFirstname(e.target.value)
   }
+  const [userId, setUserId] = useState<number>(0)
 
   const [messageApi, contextHolder] = message.useMessage()
 
@@ -53,11 +54,25 @@ export const UserName = () => {
         .finally(() => setLoading(false))
     }
   }
+
+  useEffect(() => {
+    setUserId(window?.Telegram?.WebApp?.initDataUnsafe?.user?.id ?? 0)
+  }, [])
+
+  const handleCopyUserId = () => {
+    navigator.clipboard.writeText(userId.toString()).then(() => {
+      messageApi.open({
+        type: 'success',
+        content: 'ID пользователя скопирован',
+      })
+    })
+  }
+
   return isLoading ? (
     <LoadingComponent />
   ) : (
     <div
-      className={`flex flex-col w-full h-auto items-center bg-tg-section-color rounded-b-3xl p-4 font-medium ${
+      className={`flex w-full h-auto items-center bg-tg-section-color rounded-b-3xl p-4 font-medium ${
         window &&
         window.Telegram.WebApp.colorScheme === 'light' &&
         'shadow-md shadow-gray-400'
@@ -73,61 +88,70 @@ export const UserName = () => {
         }}>
         {contextHolder}
       </ConfigProvider>
-      <div className='flex flex-col items-center w-full'>
-        <div className='flex w-full font-medium items-center justify-start gap-2 mb-2'>
-          <UserOutlined />
-          <span>Имя</span>
-        </div>
-        <ConfigProvider
-          theme={{
-            components: {
-              Input: {
-                activeShadow: 'none',
-                colorTextPlaceholder: '#9c9c9c',
-              },
-            },
-          }}>
-          <Input
-            type='name'
-            size='large'
-            style={{
-              width: '100%',
-              backgroundColor: 'var(--tg-theme-bg-color)',
-              borderColor: 'var(--tg-theme-hint-color)',
-              color: 'var(--tg-theme-text-color)',
-              fontWeight: '400',
-            }}
-            placeholder='Ваше имя'
-            value={firstname}
-            onChange={handleFirstnameChange}
-          />
-        </ConfigProvider>
-        {firstname !== initFirstname && (
-          <div className='flex w-full items-center justify-between mt-3'>
-            <button
-              className='p-3 bg-tg-button-color text-tg-text-color rounded-xl flex gap-2 items-center justify-center'
-              style={{ width: '48%' }}
-              onClick={handleChangeFirstName}
-              disabled={loading}>
-              <div className='flex items-center gap-2'>
-                {loading && (
-                  <Spin
-                    indicator={
-                      <LoadingOutlined spin style={{ color: 'white' }} />
-                    }
-                  />
-                )}
-                Сохранить
-              </div>
-            </button>
-            <button
-              className='p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'
-              style={{ width: '48%' }}
-              onClick={() => setFirstname(initFirstname)}>
-              Отменить
-            </button>
+      <div className='flex gap-5 justify-between'>
+        <div className='flex flex-col items-center w-full'>
+          <div className='flex w-full font-medium items-center justify-start gap-2 mb-2'>
+            <UserOutlined />
+            <span>Имя</span>
           </div>
-        )}
+          <ConfigProvider
+            theme={{
+              components: {
+                Input: {
+                  activeShadow: 'none',
+                  colorTextPlaceholder: '#9c9c9c',
+                },
+              },
+            }}>
+            <Input
+              type='name'
+              size='large'
+              style={{
+                width: '100%',
+                backgroundColor: 'var(--tg-theme-bg-color)',
+                borderColor: 'var(--tg-theme-hint-color)',
+                color: 'var(--tg-theme-text-color)',
+                fontWeight: '400',
+              }}
+              placeholder='Ваше имя'
+              value={firstname}
+              onChange={handleFirstnameChange}
+            />
+          </ConfigProvider>
+          {firstname !== initFirstname && (
+            <div className='flex w-full items-center justify-between mt-3'>
+              <button
+                className='p-3 bg-tg-button-color text-tg-text-color rounded-xl flex gap-2 items-center justify-center'
+                style={{ width: '48%' }}
+                onClick={handleChangeFirstName}
+                disabled={loading}>
+                <div className='flex items-center gap-2'>
+                  {loading && (
+                    <Spin
+                      indicator={
+                        <LoadingOutlined spin style={{ color: 'white' }} />
+                      }
+                    />
+                  )}
+                  Сохранить
+                </div>
+              </button>
+              <button
+                className='p-3 bg-tg-section-second-color text-tg-destructive-text-color rounded-xl'
+                style={{ width: '48%' }}
+                onClick={() => setFirstname(initFirstname)}>
+                Отменить
+              </button>
+            </div>
+          )}
+        </div>
+        <button onClick={handleCopyUserId}>
+          <div className='flex w-full font-medium items-center justify-start gap-2 mb-2'>
+            <CopyOutlined />
+            <span>Ваш код</span>
+          </div>
+          <div className='mt-3'>{userId}</div>
+        </button>
       </div>
     </div>
   )

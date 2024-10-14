@@ -97,47 +97,9 @@ export default function Home() {
     | null
   >([])
 
-  useEffect(() => {
-    getCategories().then(r => {
-      if (r) {
-        setCategories(r)
-      }
-    })
-  }, [])
-
-  useEffect(() => {
-    getLevels().then(r => {
-      if (r) {
-        setLevelInfo(r)
-      }
-    })
-  }, [])
-
   const [userNames, setUserNames] = useState<
     { project_id: number; name: string | null }[]
   >([])
-
-  useEffect(() => {
-    if (activeProjects) {
-      const names: { project_id: number; name: string }[] = []
-
-      for (let i = 0; i < activeProjects.length; i++) {
-        getNameExecutorProject({
-          for_executor: true,
-          project_id: activeProjects[i].id,
-        }).then(r => {
-          if (r) {
-            names.push({
-              project_id: activeProjects[i].id,
-              name: r,
-            })
-          }
-        })
-      }
-
-      setUserNames(names)
-    }
-  }, [activeProjects])
 
   useEffect(() => {
     if (webApp && user) {
@@ -234,10 +196,56 @@ export default function Home() {
   }, [webApp, user, auth])
 
   useEffect(() => {
-    getExecutorProject().then(data => {
-      setActiveProjects(data)
-    })
-  }, [])
+    if (auth === 'user') {
+      getCategories().then(r => {
+        if (r) {
+          setCategories(r)
+        }
+      })
+    }
+  }, [auth])
+
+  useEffect(() => {
+    if (auth === 'user') {
+      getLevels().then(r => {
+        if (r) {
+          setLevelInfo(r)
+        }
+      })
+    }
+  }, [auth])
+
+  useEffect(() => {
+    if (auth === 'user') {
+      if (activeProjects) {
+        const names: { project_id: number; name: string }[] = []
+
+        for (let i = 0; i < activeProjects.length; i++) {
+          getNameExecutorProject({
+            for_executor: true,
+            project_id: activeProjects[i].id,
+          }).then(r => {
+            if (r) {
+              names.push({
+                project_id: activeProjects[i].id,
+                name: r,
+              })
+            }
+          })
+        }
+
+        setUserNames(names)
+      }
+    }
+  }, [activeProjects, auth])
+
+  useEffect(() => {
+    if (auth === 'user') {
+      getExecutorProject().then(data => {
+        setActiveProjects(data)
+      })
+    }
+  }, [auth])
 
   const [index, setIndex] = useState(0)
   const activeOrder = activeProjects?.[index]
@@ -311,8 +319,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchDisputeList()
-  }, [])
+    if (auth === 'user') {
+      fetchDisputeList()
+    }
+  }, [auth])
 
   function isTimePassed(targetTime: string): boolean {
     // Разделяем строку на дату и время
@@ -349,8 +359,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    fetchAllConfirmProjects()
-  }, [])
+    if (auth === 'user') {
+      fetchAllConfirmProjects()
+    }
+  }, [auth])
 
   const [loadingNone, setLoadingNone] = useState<boolean>(false)
   const [loadingYes, setLoadingYes] = useState<boolean>(false)
@@ -440,10 +452,12 @@ export default function Home() {
   } | null>(null)
 
   useEffect(() => {
-    getNewLevel().then(data => {
-      setNewLevel(data)
-    })
-  }, [])
+    if (auth === 'user') {
+      getNewLevel().then(data => {
+        setNewLevel(data)
+      })
+    }
+  }, [auth])
 
   const [showCancelModal, setShowCancelModal] = useState(false)
 

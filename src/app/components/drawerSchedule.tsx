@@ -13,7 +13,9 @@ export function DrawerSchedule(props: Props) {
       anchor='bottom'
       open={open}
       onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}>
+      onOpen={() => setOpen(true)}
+      className='bg-transparent'
+      style={{ backgroundColor: 'transparent' }}>
       <div className='flex flex-col w-full items-center px-7 pt-3 pb-7 bg-tg-section-color text-tg-text-color rounded-t-3xl'>
         <span className='w-10 h-1 bg-tg-subtitle-color rounded-xl'></span>
         <img src='/moon.gif' alt='My GIF' width={'60%'} />
@@ -32,7 +34,8 @@ export function DrawerSchedule(props: Props) {
           </p>
           <p className='text-tg-subtitle-color' style={{ fontSize: '14px' }}>
             • Когда переключатель "Принимаю заказы" в неактивном положении и у
-            вас нерабочее время, то включить поиск заказов не получится, для этого рекомендуем сменить график работы.
+            вас нерабочее время, то включить поиск заказов не получится, для
+            этого рекомендуем сменить график работы.
           </p>
         </span>
       </div>

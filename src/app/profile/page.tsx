@@ -1,18 +1,22 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNav } from '@/context/navContext'
 import { UserName } from './components/UserName'
 import { Skills } from './components/Skills'
 import { Category } from './components/Category'
 import { setCloudStorageItem } from '../API'
 import { useRouter } from 'next/navigation'
-import { CaretRightOutlined, UserSwitchOutlined } from '@ant-design/icons'
+import {
+  CaretRightOutlined,
+  CopyOutlined,
+  IdcardOutlined,
+  UserSwitchOutlined,
+} from '@ant-design/icons'
 import { ConfigProvider } from 'antd'
 
 export default function ProfilePage() {
   const { setShowNavigation, setActiveButton } = useNav()
   const router = useRouter()
-
   useEffect(() => {
     setShowNavigation(true)
     setActiveButton('/profile')
@@ -64,6 +68,7 @@ export default function ProfilePage() {
         <UserName />
         <Skills />
         <Category />
+
         <button
           className='flex w-full h-auto items-center text-tg-text-color justify-between bg-tg-section-color rounded-3xl mt-3 py-4 px-6 font-medium'
           onClick={handleChangeAccount}>
