@@ -139,13 +139,7 @@ export const Skills = () => {
           <Input
             type='text'
             size='large'
-            style={{
-              width: '100%',
-              backgroundColor: 'var(--tg-theme-bg-color)',
-              borderColor: 'var(--tg-theme-hint-color)',
-              color: 'var(--tg-theme-text-color)',
-              fontWeight: '400',
-            }}
+            className='bg-tg-section-second-color'
             placeholder='Введите навык...'
             value={inputValue}
             onChange={handleInputChange}

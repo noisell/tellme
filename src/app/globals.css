@@ -259,3 +259,7 @@ main {
   .ant-picker-time-panel-cell-inner {
   background-color: rgba(0, 0, 0, 0.6) !important;
 }
+
+.gr {
+  background-color: var(--tg-second-section-color) !important;
+}

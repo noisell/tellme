@@ -53,6 +53,8 @@ import { useNav } from '@/context/navContext'
 import { Modal } from 'antd'
 import dayjs from 'dayjs'
 import Image from 'next/image'
+import { Drawer } from './drawer'
+import { SwipeableDrawer } from '@mui/material'
 
 const { TextArea } = Input
 
@@ -593,6 +595,8 @@ export default function User() {
     fetchProject()
   }, [])
 
+  const [drawer1, setDrawer1] = useState(false)
+
   const [loadingCancel, setLoadingCancel] = useState(false)
 
   const handleCancelProject = () => {
@@ -829,6 +833,37 @@ export default function User() {
 
   return (
     <main className='flex w-full flex-col bg-tg-secondary-background-color items-center pb-[20px]'>
+      <SwipeableDrawer
+        anchor='bottom'
+        open={drawer1}
+        onClose={() => setDrawer1(false)}
+        onOpen={() => setDrawer1(true)}>
+        <div className='flex flex-col w-full items-center px-7 pt-3 pb-7 bg-tg-section-color text-tg-text-color rounded-t-3xl'>
+          <span className='w-10 h-1 bg-tg-subtitle-color rounded-xl'></span>
+          <img src='/writing.gif' alt='My GIF' width={'60%'} />
+          <span className='flex flex-col text-left gap-y-2'>
+            <p className='font-bold mb-2 ' style={{ fontSize: '14px' }}>
+              Получение совета от эксперта
+            </p>
+            <p className='text-tg-subtitle-color' style={{ fontSize: '14px' }}>
+              • Для начала нужно выбрать категорию, уровень эксперта,
+              длительность созвона, описать свой вопрос
+            </p>
+            <p className='text-tg-subtitle-color' style={{ fontSize: '14px' }}>
+              • Если выбрать пункт как можно скорее, то звонок начнётся сразу
+              после того, как эксперт примет ваш заказ
+            </p>
+            <p className='text-tg-subtitle-color' style={{ fontSize: '14px' }}>
+              • Если задавать временной промежуток, то звонок начнётся в то
+              время, которое указал эксперт при принятии заказа
+            </p>
+            <p className='text-tg-subtitle-color' style={{ fontSize: '14px' }}>
+              • Также вы можете сделать поиск по определённому эксперту, введя
+              его код
+            </p>
+          </span>
+        </div>
+      </SwipeableDrawer>
       <ConfigProvider
         theme={{
           components: {
@@ -1245,6 +1280,7 @@ export default function User() {
                   <span>Получить совет</span>
                 </div>
                 <InfoCircleOutlined
+                  onClick={() => setDrawer1(true)}
                   style={{
                     fontSize: '18px',
                     color: 'var(--tg-theme-subtitle-text-color)',

@@ -90,40 +90,47 @@ export const UserName = () => {
       </ConfigProvider>
       <div className='flex gap-5 justify-between'>
         <div className='flex flex-col items-center w-full'>
-          <div className='flex w-full font-medium items-center justify-start gap-2 mb-2'>
-            <UserOutlined />
-            <span>Имя</span>
-          </div>
-          <ConfigProvider
-            theme={{
-              components: {
-                Input: {
-                  colorBgContainer: 'var(--tg-second-section-color)',
-                  colorBorder: 'transparent',
-                  colorText: 'var(--tg-theme-text-color)',
-                  colorTextPlaceholder: 'var(--tg-theme-subtitle-text-color)',
-                  borderRadiusLG: 12,
-                  activeBorderColor: 'transparent',
-                  activeShadow: 'transparent',
-                  hoverBorderColor: 'transparent',
+          <div className='flex gap-3'>
+            <ConfigProvider
+              theme={{
+                components: {
+                  Input: {
+                    colorBgContainer: 'var(--tg-second-section-color)',
+                    colorBorder: 'transparent',
+                    colorText: 'var(--tg-theme-text-color)',
+                    colorTextPlaceholder: 'var(--tg-theme-subtitle-text-color)',
+                    borderRadiusLG: 12,
+                    activeBorderColor: 'transparent',
+                    activeShadow: 'transparent',
+                    hoverBorderColor: 'transparent',
+                  },
                 },
-              },
-            }}>
-            <Input
-              type='name'
-              size='large'
-              style={{
-                width: '100%',
-                backgroundColor: 'var(--tg-theme-bg-color)',
-                borderColor: 'var(--tg-theme-hint-color)',
-                color: 'var(--tg-theme-text-color)',
-                fontWeight: '400',
-              }}
-              placeholder='Ваше имя'
-              value={firstname}
-              onChange={handleFirstnameChange}
-            />
-          </ConfigProvider>
+              }}>
+              <div>
+                <div className='flex w-full font-medium items-center justify-start gap-2 mb-2'>
+                  <UserOutlined />
+                  <span>Имя</span>
+                </div>
+
+                <Input
+                  type='name'
+                  size='large'
+                  placeholder='Ваше имя'
+                  value={firstname}
+                  className='bg-tg-section-second'
+                  onChange={handleFirstnameChange}
+                />
+              </div>
+
+              <button onClick={handleCopyUserId}>
+                <div className='flex w-full font-medium bg-tg-section-second-color items-center justify-start gap-2 mb-2'>
+                  <CopyOutlined />
+                  <span>Ваш код</span>
+                </div>
+                <div className='mt-3'>{userId}</div>
+              </button>
+            </ConfigProvider>
+          </div>
           {firstname !== initFirstname && (
             <div className='flex w-full items-center justify-between mt-3'>
               <button
@@ -151,13 +158,6 @@ export const UserName = () => {
             </div>
           )}
         </div>
-        <button onClick={handleCopyUserId}>
-          <div className='flex w-full font-medium items-center justify-start gap-2 mb-2'>
-            <CopyOutlined />
-            <span>Ваш код</span>
-          </div>
-          <div className='mt-3'>{userId}</div>
-        </button>
       </div>
     </div>
   )

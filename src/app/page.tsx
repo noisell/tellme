@@ -45,6 +45,7 @@ import { DrawerDispute } from './components/drawerDispute'
 import { TextDispute } from './components/text-dispute'
 import { formatToUserTimezone, getOrderWord } from '@/utils'
 import Image from 'next/image'
+import { Drawer } from './components/drawer'
 
 export default function Home() {
   const [categories, setCategories] = useState<Categories[] | undefined>(
@@ -596,68 +597,50 @@ export default function Home() {
               </div>
             }></Modal>
           {newLevel && (
-            <Modal
-              open={!!newLevel}
-              onClose={() => setNewLevel(null)}
-              style={{
-                background: 'var(--tg-theme-bg-color)',
-                borderRadius: 20,
-              }}
-              centered
-              closeIcon={null}
-              maskClosable
-              footer={
-                <>
-                  <div className='flex flex-col justify-between gap-2'>
-                    <img
-                      src={`/${newLevel.id}.gif`}
-                      width={150}
-                      height={150}
-                      className='mx-auto'
-                      alt=''
-                    />
-                    <div className='text-center mt-3'>
-                      <div>
-                        У вас новый уровень:{' '}
-                        <span className='text-tg-accent-color'>
-                          {newLevel.name}
-                        </span>
-                      </div>
-                      {newLevel.id === 4 && (
-                        <div>Вы достигли максимального уровня</div>
-                      )}
-                      {newLevel.id !== 4 && (
+            <Drawer
+              open={newLevel !== null}
+              setOpen={() => setNewLevel(null)}
+              content={
+                <div className='pt-5'>
+                  <>
+                    <div className='flex flex-col justify-between gap-2'>
+                      <img
+                        src={`/${newLevel.id}.gif`}
+                        width={150}
+                        height={150}
+                        className='mx-auto'
+                        alt=''
+                      />
+                      <div className='text-center mt-3'>
                         <div>
-                          До следующего уровня{' '}
+                          У вас новый уровень:{' '}
                           <span className='text-tg-accent-color'>
-                            {newLevel.count_orders_completed -
-                              newLevel.count_orders_closed}{' '}
-                            {getOrderWord(
-                              newLevel.count_orders_completed -
-                                newLevel.count_orders_closed,
-                            )}
+                            {newLevel.name}
                           </span>
                         </div>
-                      )}
+                        {newLevel.id === 4 && (
+                          <div>Вы достигли максимального уровня</div>
+                        )}
+                        {newLevel.id !== 4 && (
+                          <div>
+                            До следующего уровня{' '}
+                            <span className='text-tg-accent-color'>
+                              {newLevel.count_orders_completed -
+                                newLevel.count_orders_closed}{' '}
+                              {getOrderWord(
+                                newLevel.count_orders_completed -
+                                  newLevel.count_orders_closed,
+                              )}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className='flex gap-2 justify-between mt-5'>
-                    <button
-                      onClick={() => setNewLevel(null)}
-                      disabled={loadingCancel}
-                      className='w-full p-3 bg-tg-button-color text-tg-button-text-color rounded-xl'>
-                      {loadingCancel && (
-                        <Spin
-                          indicator={
-                            <LoadingOutlined spin style={{ color: 'white' }} />
-                          }
-                        />
-                      )}
-                      Супер!
-                    </button>
-                  </div>
-                </>
-              }></Modal>
+                    <div className='flex gap-2 justify-between mt-5'></div>
+                  </>
+                </div>
+              }
+            />
           )}
         </ConfigProvider>
 

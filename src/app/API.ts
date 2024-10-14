@@ -11,31 +11,31 @@ import {
   UserData,
 } from '@/app/types'
 
-// const baseURL = 'https://api.tellme.tips'
-const baseURL = 'https://api.two-market.ru'
-// export const axiosBase = async (cookie: boolean = false) => {
-//   return axios.create({
-//     baseURL: baseURL,
-//     headers: {
-//       Authorization: `Bearer ${await getCloudStorageItem(
-//         'access_token',
-//         false,
-//       )}`,
-//       'Content-Type': 'application/json',
-//     },
-//     withCredentials: cookie,
-//   })
-// }
+const baseURL = 'https://api.tellme.tips'
 export const axiosBase = async (cookie: boolean = false) => {
   return axios.create({
     baseURL: baseURL,
     headers: {
-      Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZ0FBQUFBQm5EUVFCVzhFM0RWTUFtU2xfM3g2SFZJNm5yTGh3SlozV2VnQnlRbU5IS1l1WHNPSFR1Q2w1Wkd5RmxSVDVYX1dqTEdFMEVmN2JrZDRQZEdOV1N3TkRkem5kU0E9PSIsInN1cGVydXNlciI6ZmFsc2UsImV4cCI6MTcyODk2NjI0MS4wNzMzMDd9.NFE6eWj2VCbuLgl5Rj4DxfbJHbCQuBdXQy4Z45TEmWSvBMbt8tBSucuUBUn3DB5sNbxKzmc6NAp60Z2ANOwnV9QqUuKWivX2azRKFKa8JHyEx1JftD4bM5WNG_CAq3GKLIsE28Yqlvk9DQCmofnI62d2Ezy_YfklDyEW7Sqm_JuDvkQNAMzBp0f5dKb8JFzSme9xdQBGjj5_oywI4FiktMNV2jzO2ag3fqIh35GFJoMhlaPdK1tLBbWckEiQ8L9n3BpWfDltkuzFQ4R-2zjoC_Kk8M4-qPs4-FT-hNDe_eObhROx2WLG4czIsuxe-jIHZvKOsYPnFY7NeLnv_FCUnA`,
+      Authorization: `Bearer ${await getCloudStorageItem(
+        'access_token',
+        false,
+      )}`,
       'Content-Type': 'application/json',
     },
     withCredentials: cookie,
   })
 }
+//         const baseURL = 'https://api.two-market.ru'
+// export const axiosBase = async (cookie: boolean = false) => {
+//   return axios.create({
+//     baseURL: baseURL,
+//     headers: {
+//       Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZ0FBQUFBQm5EUVFCVzhFM0RWTUFtU2xfM3g2SFZJNm5yTGh3SlozV2VnQnlRbU5IS1l1WHNPSFR1Q2w1Wkd5RmxSVDVYX1dqTEdFMEVmN2JrZDRQZEdOV1N3TkRkem5kU0E9PSIsInN1cGVydXNlciI6ZmFsc2UsImV4cCI6MTcyODk2NjI0MS4wNzMzMDd9.NFE6eWj2VCbuLgl5Rj4DxfbJHbCQuBdXQy4Z45TEmWSvBMbt8tBSucuUBUn3DB5sNbxKzmc6NAp60Z2ANOwnV9QqUuKWivX2azRKFKa8JHyEx1JftD4bM5WNG_CAq3GKLIsE28Yqlvk9DQCmofnI62d2Ezy_YfklDyEW7Sqm_JuDvkQNAMzBp0f5dKb8JFzSme9xdQBGjj5_oywI4FiktMNV2jzO2ag3fqIh35GFJoMhlaPdK1tLBbWckEiQ8L9n3BpWfDltkuzFQ4R-2zjoC_Kk8M4-qPs4-FT-hNDe_eObhROx2WLG4czIsuxe-jIHZvKOsYPnFY7NeLnv_FCUnA`,
+//       'Content-Type': 'application/json',
+//     },
+//     withCredentials: cookie,
+//   })
+// }
 
 export async function checkStartParam(startParam: string | undefined) {
   if (startParam) {
