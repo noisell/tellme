@@ -90,7 +90,7 @@ export const UserName = () => {
       </ConfigProvider>
       <div className='flex gap-5 justify-between'>
         <div className='flex flex-col items-center w-full'>
-          <div className='flex gap-3'>
+          <div className='grid grid-cols-2 gap-3'>
             <ConfigProvider
               theme={{
                 components: {
@@ -123,11 +123,13 @@ export const UserName = () => {
               </div>
 
               <button onClick={handleCopyUserId}>
-                <div className='flex w-full font-medium bg-tg-section-second-color items-center justify-start gap-2 mb-2'>
+                <div className='flex w-full flex-1 font-medium items-center justify-start gap-2 mb-2'>
                   <CopyOutlined />
                   <span>Ваш код</span>
                 </div>
-                <div className='mt-3'>{userId}</div>
+                <div className='flex items-center text-left h-[40px]'>
+                  {userId}
+                </div>
               </button>
             </ConfigProvider>
           </div>

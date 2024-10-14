@@ -11,6 +11,7 @@ import {
   UserData,
 } from '@/app/types'
 
+// const baseURL = 'https://api.two-market.ru'
 const baseURL = 'https://api.tellme.tips'
 export const axiosBase = async (cookie: boolean = false) => {
   return axios.create({
@@ -25,12 +26,11 @@ export const axiosBase = async (cookie: boolean = false) => {
     withCredentials: cookie,
   })
 }
-//         const baseURL = 'https://api.two-market.ru'
 // export const axiosBase = async (cookie: boolean = false) => {
 //   return axios.create({
 //     baseURL: baseURL,
 //     headers: {
-//       Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZ0FBQUFBQm5EUVFCVzhFM0RWTUFtU2xfM3g2SFZJNm5yTGh3SlozV2VnQnlRbU5IS1l1WHNPSFR1Q2w1Wkd5RmxSVDVYX1dqTEdFMEVmN2JrZDRQZEdOV1N3TkRkem5kU0E9PSIsInN1cGVydXNlciI6ZmFsc2UsImV4cCI6MTcyODk2NjI0MS4wNzMzMDd9.NFE6eWj2VCbuLgl5Rj4DxfbJHbCQuBdXQy4Z45TEmWSvBMbt8tBSucuUBUn3DB5sNbxKzmc6NAp60Z2ANOwnV9QqUuKWivX2azRKFKa8JHyEx1JftD4bM5WNG_CAq3GKLIsE28Yqlvk9DQCmofnI62d2Ezy_YfklDyEW7Sqm_JuDvkQNAMzBp0f5dKb8JFzSme9xdQBGjj5_oywI4FiktMNV2jzO2ag3fqIh35GFJoMhlaPdK1tLBbWckEiQ8L9n3BpWfDltkuzFQ4R-2zjoC_Kk8M4-qPs4-FT-hNDe_eObhROx2WLG4czIsuxe-jIHZvKOsYPnFY7NeLnv_FCUnA`,
+//       Authorization: `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZ0FBQUFBQm5EVWFibU9EMWZCekV3b2ZrMG5tSTdNTW8tWk9pbWtOZ0JoS2o3QkxoaTdndkZPMGhaWkFSVDdZX19tR3hmRE9Dckhqak5HdTRuRVZxU01tT0VwU19CaW4zUmc9PSIsInN1cGVydXNlciI6ZmFsc2UsImV4cCI6MTcyODk4MzI5MS41MDI2ODh9.twAV92O1sw-N61ei6v_1U6uzDlk3RDxU6xUpcpZIGERWlCmQ-uOG6fStprPxUvqwswT4rc-aKUKLfwMcQOjG_KmwtSy7SEoPITdRLXAdYqg5mll08MpVx0XYVbLpJonM5lEVjs0OqgoRbOoLaTZyEkmgwW8ZdGXrXX5VxTebBPq34E7f23rh038SBamGe2UaWQPC6ZIClBb7YvaaEmjoEBb9K8LTAJwghQgzKWc9Hbwle4jpNIJhkuidrfuV6dyTt2u-xohCLe5UB4jF6Fb90ZPjkZF2_XEkYmMNXdFRKMB1uOV2FqiPfo-kQ1KqO56wAu1kbZI1nHBNW7emLmD2LA `,
 //       'Content-Type': 'application/json',
 //     },
 //     withCredentials: cookie,

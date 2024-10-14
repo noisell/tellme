@@ -20,7 +20,7 @@ export const TelegramContext = createContext<ITelegramContext>({})
 //     // @ts-ignore
 //     initDataUnsafe: {
 //       user: {
-//         id: 844642570,
+//         id: 464821242,
 //         username: 'Nikita',
 //         first_name: 'Nikita228',
 //       },

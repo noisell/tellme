@@ -40,14 +40,15 @@ export function OrdersAcceptSection(props: Props) {
     })
   }
 
+  const fetchData = async () => {
+    const executorData = await getExecutorInfoById()
+    setExecutorInfo(executorData) // Set the executorInfo state
+    const taskData = await getTaskInfo()
+    setTaskInfo(taskData)
+  }
+
   // Fetch both executor info and task info on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      const executorData = await getExecutorInfoById()
-      setExecutorInfo(executorData) // Set the executorInfo state
-      const taskData = await getTaskInfo()
-      setTaskInfo(taskData)
-    }
     fetchData()
   }, [])
 

@@ -55,6 +55,7 @@ import dayjs from 'dayjs'
 import Image from 'next/image'
 import { Drawer } from './drawer'
 import { SwipeableDrawer } from '@mui/material'
+import { DisputeItem } from './dispute-item'
 
 const { TextArea } = Input
 
@@ -673,6 +674,28 @@ export default function User() {
   const [loadingNone, setLoadingNone] = useState<boolean>(false)
   const [loadingYes, setLoadingYes] = useState<boolean>(false)
 
+  const [disputeList, setDisputeList] = useState<
+    {
+      project_id: number
+      user_id: number
+      executor_id: number
+      message: string
+      category_name: string
+      video_url: string
+      admin_id: number | null
+      active: boolean
+      question: string
+      created_at: string
+      category: string
+    }[]
+  >([])
+
+  const fetchDispute = () => {
+    getAllDisputes({ for_executor: false }).then(data => {
+      setDispute(data)
+    })
+  }
+
   const handleClose = (string: 'yes' | 'none', boolean: boolean) => {
     // TODO
     if (string === 'yes') {
@@ -696,6 +719,7 @@ export default function User() {
           setProjectDifference(dispute)
         })
         setActiveOrder(null)
+        fetchDispute()
       })
     }
 
@@ -831,7 +855,29 @@ export default function User() {
     })
   }
 
+  useEffect(() => {
+    fetchDispute()
+  }, [])
+
   const [showCancelModal, setShowCancelModal] = useState(false)
+
+  const [disputeIndex, setDisputeIndex] = useState<number>(0)
+
+  const nextDispute = () => {
+    if (disputeIndex + 1 === disputeList?.length) {
+      setDisputeIndex(0)
+    } else {
+      setDisputeIndex(disputeIndex + 1)
+    }
+  }
+
+  const prevDispute = () => {
+    if (disputeIndex === 0) {
+      setDisputeIndex(disputeList?.length - 1)
+    } else {
+      setDisputeIndex(disputeIndex - 1)
+    }
+  }
 
   return (
     <main className='flex w-full flex-col bg-tg-secondary-background-color items-center pb-[20px]'>
@@ -1266,6 +1312,42 @@ export default function User() {
                 {formatToUserTimezone(activeOrder.info.start_time)}
               </div>
             )}
+          </div>
+        )}
+
+        {disputeList && disputeList[disputeIndex] && (
+          <div className='flex flex-col w-full h-auto items-center'>
+            <div
+              className={`flex flex-col w-full h-auto mt-3 bg-tg-section-color rounded-3xl py-4 px-4 ${
+                window.Telegram.WebApp.colorScheme === 'light' &&
+                'shadow-md shadow-gray-400'
+              }`}>
+              <div className='flex flex-col w-full items-center justify-between mt-1 font-medium mb-3 px-1'>
+                <div className='flex items-center justify-between w-full'>
+                  <div className='flex w-full items-center gap-2 text-orange-500'>
+                    <ExclamationCircleOutlined />
+                    <div>
+                      <div className='font-medium' style={{ width: '100%' }}>
+                        Активные споры
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <DisputeItem
+                  key={disputeList[disputeIndex].project_id}
+                  project_id={disputeList[disputeIndex].project_id}
+                  created_at={disputeList[disputeIndex].created_at}
+                  category={disputeList[disputeIndex].category_name}
+                  admin_id={disputeList[disputeIndex].admin_id}
+                  question={disputeList[disputeIndex].question}
+                  video_url={disputeList[disputeIndex].video_url}
+                  setDisputeList={setDisputeList}
+                  next={nextDispute}
+                  prev={prevDispute}
+                  hasNext={disputeList.length > 1}
+                />
+              </div>
+            </div>
           </div>
         )}
 
