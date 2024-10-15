@@ -11,7 +11,6 @@ import {
   UserData,
 } from '@/app/types'
 
-// const baseURL = 'https://api.two-market.ru'
 const baseURL = 'https://api.tellme.tips'
 export const axiosBase = async (cookie: boolean = false) => {
   return axios.create({
@@ -26,6 +25,7 @@ export const axiosBase = async (cookie: boolean = false) => {
     withCredentials: cookie,
   })
 }
+// const baseURL = 'https://api.two-market.ru'
 // export const axiosBase = async (cookie: boolean = false) => {
 //   return axios.create({
 //     baseURL: baseURL,

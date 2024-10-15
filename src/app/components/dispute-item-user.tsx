@@ -1,13 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { ConfigProvider, message, Spin, Upload, UploadFile } from 'antd'
-import {
-  CloudUploadOutlined,
-  ArrowLeftOutlined,
-  ArrowRightOutlined,
-  LoadingOutlined,
-} from '@ant-design/icons'
+import React from 'react'
+import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons'
 import { TextDispute } from './text-dispute'
-import { getAllDisputes, uploadVideoToBack } from '../API'
 
 interface DisputeItemUserProps {
   project_id: number
@@ -34,10 +27,6 @@ export const DisputeItemUser = ({
   setDisputeList,
   video_url,
 }: DisputeItemUserProps) => {
-  const [fileList, setFileList] = useState<UploadFile[]>([])
-  const [isUploading, setIsUploading] = useState(false) // Добавляем состояние загрузки
-  const [messageApi, contextHolder] = message.useMessage()
-
   function formatToUserTimezone(dateString: string): string {
     // Преобразуем строку в объект Date (UTC)
     const date = new Date(dateString)
@@ -65,17 +54,6 @@ export const DisputeItemUser = ({
 
   return (
     <>
-      <ConfigProvider
-        theme={{
-          components: {
-            Message: {
-              contentBg: 'var(--tg-second-section-color)',
-              colorText: 'var(--tg-theme-text-color)',
-            },
-          },
-        }}>
-        {contextHolder}
-      </ConfigProvider>
       <div className='text-left w-full font-normal mt-3 text-[14px] flex flex-col gap-1'>
         <div>
           Дата открытия спора:{' '}

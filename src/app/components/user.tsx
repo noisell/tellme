@@ -1594,7 +1594,7 @@ export default function User() {
               </button>
               <p className='text-[10px] mt-1 w-full text-center text-tg-subtitle-color px-2'>
                 Создавая заказ вы принимаете нашу{' '}
-                <Link href='/offer'>публичную оферту</Link>
+                <Link href='/public-offer.pdf'>публичную оферту</Link>
               </p>
             </div>
           </div>
